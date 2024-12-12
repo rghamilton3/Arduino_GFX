@@ -78,50 +78,55 @@ void Arduino_SH8601::setBrightness(uint8_t brightness) {
 
 void Arduino_SH8601::setContrast(uint8_t contrast) {
   switch (contrast) {
-  case SH8601_ContrastOff:
-    _bus->beginWrite();
-    _bus->writeC8D8(SH8601_W_WCE, 0x00);
-    _bus->endWrite();
-    break;
-  case SH8601_LowContrast:
-    _bus->beginWrite();
-    _bus->writeC8D8(SH8601_W_WCE, 0x05);
-    _bus->endWrite();
-    break;
-  case SH8601_MediumContrast:
-    _bus->beginWrite();
-    _bus->writeC8D8(SH8601_W_WCE, 0x06);
-    _bus->endWrite();
-    break;
-  case SH8601_HighContrast:
-    _bus->beginWrite();
-    _bus->writeC8D8(SH8601_W_WCE, 0x07);
-    _bus->endWrite();
-    break;
+=======
+    void Arduino_SH8601::SetContrast(uint8_t Contrast) {
+      switch (Contrast) {
+>>>>>>> refs/remotes/origin/SH8601
+      case SH8601_ContrastOff:
+        _bus->beginWrite();
+        _bus->writeC8D8(SH8601_W_WCE, 0x00);
+        _bus->endWrite();
+        break;
+      case SH8601_LowContrast:
+        _bus->beginWrite();
+        _bus->writeC8D8(SH8601_W_WCE, 0x05);
+        _bus->endWrite();
+        break;
+      case SH8601_MediumContrast:
+        _bus->beginWrite();
+        _bus->writeC8D8(SH8601_W_WCE, 0x06);
+        _bus->endWrite();
+        break;
+      case SH8601_HighContrast:
+        _bus->beginWrite();
+        _bus->writeC8D8(SH8601_W_WCE, 0x07);
+        _bus->endWrite();
+        break;
 
-  default:
-    break;
-  }
-}
+      default:
+        break;
+      }
+    }
 
-// Companion code to the above tables.  Reads and issues
-// a series of LCD commands stored in PROGMEM byte array.
-void Arduino_SH8601::tftInit() {
-  if (_rst != GFX_NOT_DEFINED) {
-    pinMode(_rst, OUTPUT);
-    digitalWrite(_rst, HIGH);
-    delay(10);
-    digitalWrite(_rst, LOW);
-    delay(SH8601_RST_DELAY);
-    digitalWrite(_rst, HIGH);
-    delay(SH8601_RST_DELAY);
-  } else {
-    // Software Rest
-    _bus->sendCommand(SH8601_C_SWRESET);
-    delay(SH8601_RST_DELAY);
-  }
+    // Companion code to the above tables.  Reads and issues
+    // a series of LCD commands stored in PROGMEM byte array.
+    void Arduino_SH8601::tftInit() {
+      if (_rst != GFX_NOT_DEFINED) {
+        pinMode(_rst, OUTPUT);
+        digitalWrite(_rst, HIGH);
+        delay(10);
+        digitalWrite(_rst, LOW);
+        delay(SH8601_RST_DELAY);
+        digitalWrite(_rst, HIGH);
+        delay(SH8601_RST_DELAY);
+      } else {
+        // Software Rest
+        _bus->sendCommand(SH8601_C_SWRESET);
+        delay(SH8601_RST_DELAY);
+      }
 
-  _bus->batchOperation(sh8601_init_operations, sizeof(sh8601_init_operations));
+      _bus->batchOperation(sh8601_init_operations,
+                           sizeof(sh8601_init_operations));
 
-  invertDisplay(false);
-}
+      invertDisplay(false);
+    }
