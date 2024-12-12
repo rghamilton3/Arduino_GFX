@@ -2,57 +2,57 @@
 #define _ARDUINO_GFX_LIBRARIES_H_
 
 #include "Arduino_DataBus.h"
-#include "databus/Arduino_AVRPAR8.h"
-#include "databus/Arduino_UNOPAR8.h"
 #include "databus/Arduino_AVRPAR16.h"
+#include "databus/Arduino_AVRPAR8.h"
 #include "databus/Arduino_DUEPAR16.h"
-#include "databus/Arduino_ESP32LCD8.h"
 #include "databus/Arduino_ESP32LCD16.h"
+#include "databus/Arduino_ESP32LCD8.h"
+#include "databus/Arduino_ESP32PAR16.h"
+#include "databus/Arduino_ESP32PAR16Q.h"
+#include "databus/Arduino_ESP32PAR16QQ.h"
 #include "databus/Arduino_ESP32PAR8.h"
 #include "databus/Arduino_ESP32PAR8Q.h"
 #include "databus/Arduino_ESP32PAR8QQ.h"
 #include "databus/Arduino_ESP32PAR8QQQ.h"
-#include "databus/Arduino_ESP32PAR16.h"
-#include "databus/Arduino_ESP32PAR16Q.h"
-#include "databus/Arduino_ESP32PAR16QQ.h"
 #include "databus/Arduino_ESP32QSPI.h"
 #include "databus/Arduino_ESP32RGBPanel.h"
-#include "databus/Arduino_ESP32S2PAR8.h"
-#include "databus/Arduino_ESP32S2PAR8Q.h"
 #include "databus/Arduino_ESP32S2PAR16.h"
 #include "databus/Arduino_ESP32S2PAR16Q.h"
+#include "databus/Arduino_ESP32S2PAR8.h"
+#include "databus/Arduino_ESP32S2PAR8Q.h"
 #include "databus/Arduino_ESP32SPI.h"
 #include "databus/Arduino_ESP32SPIDMA.h"
 #include "databus/Arduino_ESP8266SPI.h"
 #include "databus/Arduino_HWSPI.h"
-#include "databus/Arduino_mbedSPI.h"
 #include "databus/Arduino_NRFXSPI.h"
-#include "databus/Arduino_RPiPicoPAR8.h"
 #include "databus/Arduino_RPiPicoPAR16.h"
+#include "databus/Arduino_RPiPicoPAR8.h"
 #include "databus/Arduino_RPiPicoSPI.h"
 #include "databus/Arduino_RTLPAR8.h"
 #include "databus/Arduino_STM32PAR8.h"
-#include "databus/Arduino_SWPAR8.h"
 #include "databus/Arduino_SWPAR16.h"
+#include "databus/Arduino_SWPAR8.h"
 #include "databus/Arduino_SWSPI.h"
+#include "databus/Arduino_UNOPAR8.h"
 #include "databus/Arduino_Wire.h"
-#include "databus/Arduino_XL9535SWSPI.h"
 #include "databus/Arduino_XCA9554SWSPI.h"
+#include "databus/Arduino_XL9535SWSPI.h"
+#include "databus/Arduino_mbedSPI.h"
 
 #include "Arduino_GFX.h" // Core graphics library
 #if !defined(LITTLE_FOOT_PRINT)
 #include "canvas/Arduino_Canvas.h"
-#include "canvas/Arduino_Canvas_Indexed.h"
 #include "canvas/Arduino_Canvas_3bit.h"
+#include "canvas/Arduino_Canvas_Indexed.h"
 #include "canvas/Arduino_Canvas_Mono.h"
 #include "display/Arduino_ILI9488_3bit.h"
 #endif // !defined(LITTLE_FOOT_PRINT)
 
 #include "display/Arduino_AXS15231B.h"
 #include "display/Arduino_CO5300.h"
-#include "display/Arduino_GC9A01.h"
 #include "display/Arduino_GC9106.h"
 #include "display/Arduino_GC9107.h"
+#include "display/Arduino_GC9A01.h"
 #include "display/Arduino_HX8347C.h"
 #include "display/Arduino_HX8347D.h"
 #include "display/Arduino_HX8352C.h"
@@ -78,11 +78,12 @@
 #include "display/Arduino_NV3041A.h"
 #include "display/Arduino_OTM8009A.h"
 #include "display/Arduino_R61529.h"
+#include "display/Arduino_RGB_Display.h"
 #include "display/Arduino_RM67162.h"
 #include "display/Arduino_RM690B0.h"
-#include "display/Arduino_RGB_Display.h"
 #include "display/Arduino_SEPS525.h"
 #include "display/Arduino_SH1106.h"
+#include "display/Arduino_SH8601.h"
 #include "display/Arduino_SSD1283A.h"
 #include "display/Arduino_SSD1306.h"
 #include "display/Arduino_SSD1331.h"
@@ -141,7 +142,8 @@
 #define DF_GFX_RST GFX_NOT_DEFINED
 #define DF_GFX_BL 14
 /* TTGO T-Watch */
-#elif defined(ARDUINO_T) || defined(ARDUINO_TWATCH_BASE) || defined(ARDUINO_TWATCH_2020_V1) || defined(ARDUINO_TWATCH_2020_V2)
+#elif defined(ARDUINO_T) || defined(ARDUINO_TWATCH_BASE) ||                    \
+    defined(ARDUINO_TWATCH_2020_V1) || defined(ARDUINO_TWATCH_2020_V2)
 #define DISPLAY_DEV_KIT
 #define TTGO_T_WATCH
 #define DF_GFX_SCK 18
