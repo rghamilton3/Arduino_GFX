@@ -5,8 +5,8 @@
 #ifndef _ARDUINO_GFX_H_
 #define _ARDUINO_GFX_H_
 
-#include "Arduino_G.h"
 #include "Arduino_DataBus.h"
+#include "Arduino_G.h"
 #include <Print.h>
 
 #if !defined(ATTINY_CORE)
@@ -30,7 +30,8 @@
 #endif
 
 #define RGB565(r, g, b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
-#define RGB16TO24(c) ((((uint32_t)c & 0xF800) << 8) | ((c & 0x07E0) << 5) | ((c & 0x1F) << 3))
+#define RGB16TO24(c)                                                           \
+  ((((uint32_t)c & 0xF800) << 8) | ((c & 0x07E0) << 5) | ((c & 0x1F) << 3))
 
 #define RGB565_BLACK RGB565(0, 0, 0)
 #define RGB565_NAVY RGB565(0, 0, 123)
@@ -107,20 +108,20 @@
 #endif
 
 #ifndef _swap_uint8_t
-#define _swap_uint8_t(a, b) \
-  {                         \
-    uint8_t t = a;          \
-    a = b;                  \
-    b = t;                  \
+#define _swap_uint8_t(a, b)                                                    \
+  {                                                                            \
+    uint8_t t = a;                                                             \
+    a = b;                                                                     \
+    b = t;                                                                     \
   }
 #endif
 
 #ifndef _swap_int16_t
-#define _swap_int16_t(a, b) \
-  {                         \
-    int16_t t = a;          \
-    a = b;                  \
-    b = t;                  \
+#define _swap_int16_t(a, b)                                                    \
+  {                                                                            \
+    int16_t t = a;                                                             \
+    a = b;                                                                     \
+    b = t;                                                                     \
   }
 #endif
 
@@ -133,40 +134,44 @@
 #endif
 
 #ifndef _in_range
-#define _in_range(v, a, b) ((a > b) ? _ordered_in_range(v, b, a) : _ordered_in_range(v, a, b))
+#define _in_range(v, a, b)                                                     \
+  ((a > b) ? _ordered_in_range(v, b, a) : _ordered_in_range(v, a, b))
 #endif
 
 #if !defined(ATTINY_CORE)
-GFX_INLINE GFXglyph *pgm_read_glyph_ptr(const GFXfont *gfxFont, uint8_t c)
-{
+GFX_INLINE GFXglyph *pgm_read_glyph_ptr(const GFXfont *gfxFont, uint8_t c) {
 #ifdef __AVR__
   return &(((GFXglyph *)pgm_read_pointer(&gfxFont->glyph))[c]);
 #else
-  // expression in __AVR__ section may generate "dereferencing type-punned pointer will break strict-aliasing rules" warning
-  // In fact, on other platforms (such as STM32) there is no need to do this pointer magic as program memory may be read in a usual way
-  // So expression may be simplified
+  // expression in __AVR__ section may generate "dereferencing type-punned
+  // pointer will break strict-aliasing rules" warning In fact, on other
+  // platforms (such as STM32) there is no need to do this pointer magic as
+  // program memory may be read in a usual way So expression may be simplified
   return gfxFont->glyph + c;
 #endif //__AVR__
 }
 
-GFX_INLINE uint8_t *pgm_read_bitmap_ptr(const GFXfont *gfxFont)
-{
+GFX_INLINE uint8_t *pgm_read_bitmap_ptr(const GFXfont *gfxFont) {
 #ifdef __AVR__
   return (uint8_t *)pgm_read_pointer(&gfxFont->bitmap);
 #else
-  // expression in __AVR__ section generates "dereferencing type-punned pointer will break strict-aliasing rules" warning
-  // In fact, on other platforms (such as STM32) there is no need to do this pointer magic as program memory may be read in a usual way
-  // So expression may be simplified
+  // expression in __AVR__ section generates "dereferencing type-punned pointer
+  // will break strict-aliasing rules" warning In fact, on other platforms (such
+  // as STM32) there is no need to do this pointer magic as program memory may
+  // be read in a usual way So expression may be simplified
   return gfxFont->bitmap;
 #endif //__AVR__
 }
 #endif // !defined(ATTINY_CORE)
 
-/// A generic graphics superclass that can handle all sorts of drawing. At a minimum you can subclass and provide drawPixel(). At a maximum you can do a ton of overriding to optimize. Used for any/all Adafruit displays!
+/// A generic graphics superclass that can handle all sorts of drawing. At a
+/// minimum you can subclass and provide drawPixel(). At a maximum you can do a
+/// ton of overriding to optimize. Used for any/all Adafruit displays!
 #if defined(LITTLE_FOOT_PRINT)
 class Arduino_GFX : public Print
 #else
-class Arduino_GFX : public Print, public Arduino_G
+class Arduino_GFX : public Print,
+                    public Arduino_G
 #endif // !defined(LITTLE_FOOT_PRINT)
 {
 public:
@@ -180,10 +185,12 @@ public:
   // These MAY be overridden by the subclass to provide device-specific
   // optimized code.  Otherwise 'generic' versions are used.
   virtual void startWrite();
-  virtual void writeFillRectPreclipped(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+  virtual void writeFillRectPreclipped(int16_t x, int16_t y, int16_t w,
+                                       int16_t h, uint16_t color);
   virtual void writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
   virtual void writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
-  virtual void writeLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
+  virtual void writeLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+                         uint16_t color);
   virtual void endWrite(void);
 
   // CONTROL API
@@ -193,6 +200,8 @@ public:
   virtual void invertDisplay(bool i);
   virtual void displayOn();
   virtual void displayOff();
+  virtual void setBrightness(uint8_t b);
+  virtual void setContrast(uint8_t c);
   bool enableRoundMode();
 
   // BASIC DRAW API
@@ -203,28 +212,44 @@ public:
   void drawPixel(int16_t x, int16_t y, uint16_t color);
   void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
   void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
-  void writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+  void writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                     uint16_t color);
   void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
   void fillScreen(uint16_t color);
   void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
   void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
   void drawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
   void fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
-  void drawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
-  void fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
-  void drawRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h, int16_t radius, uint16_t color);
-  void fillRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h, int16_t radius, uint16_t color);
-  void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h, uint16_t color);
-  void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color);
-  void drawXBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h, uint16_t color);
-  void drawGrayscaleBitmap(int16_t x, int16_t y, const uint8_t bitmap[], const uint8_t mask[], int16_t w, int16_t h);
-  void drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint8_t *mask, int16_t w, int16_t h);
-  void draw16bitRGBBitmapWithMask(int16_t x, int16_t y, const uint16_t bitmap[], const uint8_t mask[], int16_t w, int16_t h);
-  void draw24bitRGBBitmap(int16_t x, int16_t y, const uint8_t bitmap[], const uint8_t mask[], int16_t w, int16_t h);
-  void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint8_t *mask, int16_t w, int16_t h);
-  void getTextBounds(const char *string, int16_t x, int16_t y, int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h);
-  void getTextBounds(const __FlashStringHelper *s, int16_t x, int16_t y, int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h);
-  void getTextBounds(const String &str, int16_t x, int16_t y, int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h);
+  void drawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2,
+                    int16_t y2, uint16_t color);
+  void fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2,
+                    int16_t y2, uint16_t color);
+  void drawRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h,
+                     int16_t radius, uint16_t color);
+  void fillRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h,
+                     int16_t radius, uint16_t color);
+  void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
+                  int16_t h, uint16_t color);
+  void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h,
+                  uint16_t color);
+  void drawXBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
+                   int16_t h, uint16_t color);
+  void drawGrayscaleBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                           const uint8_t mask[], int16_t w, int16_t h);
+  void drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint8_t *mask,
+                           int16_t w, int16_t h);
+  void draw16bitRGBBitmapWithMask(int16_t x, int16_t y, const uint16_t bitmap[],
+                                  const uint8_t mask[], int16_t w, int16_t h);
+  void draw24bitRGBBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                          const uint8_t mask[], int16_t w, int16_t h);
+  void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint8_t *mask,
+                          int16_t w, int16_t h);
+  void getTextBounds(const char *string, int16_t x, int16_t y, int16_t *x1,
+                     int16_t *y1, uint16_t *w, uint16_t *h);
+  void getTextBounds(const __FlashStringHelper *s, int16_t x, int16_t y,
+                     int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h);
+  void getTextBounds(const String &str, int16_t x, int16_t y, int16_t *x1,
+                     int16_t *y1, uint16_t *w, uint16_t *h);
   void setTextSize(uint8_t s);
   void setTextSize(uint8_t sx, uint8_t sy);
   void setTextSize(uint8_t sx, uint8_t sy, uint8_t pixel_margin);
@@ -237,57 +262,108 @@ public:
   uint16_t u8g2_font_get_word(const uint8_t *font, uint8_t offset);
   uint8_t u8g2_font_decode_get_unsigned_bits(uint8_t cnt);
   int8_t u8g2_font_decode_get_signed_bits(uint8_t cnt);
-  void u8g2_font_decode_len(uint8_t len, uint8_t is_foreground, uint16_t color, uint16_t bg);
+  void u8g2_font_decode_len(uint8_t len, uint8_t is_foreground, uint16_t color,
+                            uint16_t bg);
 #endif // defined(U8G2_FONT_SUPPORT)
   virtual void flush(void);
 #endif // !defined(ATTINY_CORE)
 
   // adopt from LovyanGFX
-  void drawEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry, uint16_t color);
-  void writeEllipseHelper(int32_t x, int32_t y, int32_t rx, int32_t ry, uint8_t cornername, uint16_t color);
-  void fillEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry, uint16_t color);
-  void writeFillEllipseHelper(int32_t x, int32_t y, int32_t rx, int32_t ry, uint8_t cornername, int16_t delta, uint16_t color);
-  void drawArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float start, float end, uint16_t color);
-  void fillArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float start, float end, uint16_t color);
-  void writeFillArcHelper(int16_t cx, int16_t cy, int16_t oradius, int16_t iradius, float start, float end, uint16_t color);
+  void drawEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry,
+                   uint16_t color);
+  void writeEllipseHelper(int32_t x, int32_t y, int32_t rx, int32_t ry,
+                          uint8_t cornername, uint16_t color);
+  void fillEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry,
+                   uint16_t color);
+  void writeFillEllipseHelper(int32_t x, int32_t y, int32_t rx, int32_t ry,
+                              uint8_t cornername, int16_t delta,
+                              uint16_t color);
+  void drawArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float start,
+               float end, uint16_t color);
+  void fillArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float start,
+               float end, uint16_t color);
+  void writeFillArcHelper(int16_t cx, int16_t cy, int16_t oradius,
+                          int16_t iradius, float start, float end,
+                          uint16_t color);
 
 // TFT optimization code, too big for ATMEL family
 #if defined(LITTLE_FOOT_PRINT)
-  void writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
-  void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h, uint16_t color, uint16_t bg);
-  void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg);
-  void drawGrayscaleBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h);
-  void drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h);
-  void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint16_t *color_index, int16_t w, int16_t h, int16_t x_skip = 0);
-  void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint16_t *color_index, uint8_t chroma_key, int16_t w, int16_t h, int16_t x_skip = 0);
-  void draw3bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h);
-  void draw16bitRGBBitmapWithMask(int16_t x, int16_t y, uint16_t *bitmap, uint8_t *mask, int16_t w, int16_t h);
-  void draw16bitRGBBitmap(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h);
-  void draw16bitRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
-  void draw16bitRGBBitmapWithTranColor(int16_t x, int16_t y, uint16_t *bitmap, uint16_t transparent_color, int16_t w, int16_t h);
-  void draw16bitBeRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
-  void draw24bitRGBBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h);
-  void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h);
-  void drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg);
+  void writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+                      uint16_t color);
+  void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
+                  int16_t h, uint16_t color, uint16_t bg);
+  void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h,
+                  uint16_t color, uint16_t bg);
+  void drawGrayscaleBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                           int16_t w, int16_t h);
+  void drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+                           int16_t h);
+  void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                         uint16_t *color_index, int16_t w, int16_t h,
+                         int16_t x_skip = 0);
+  void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                         uint16_t *color_index, uint8_t chroma_key, int16_t w,
+                         int16_t h, int16_t x_skip = 0);
+  void draw3bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+                         int16_t h);
+  void draw16bitRGBBitmapWithMask(int16_t x, int16_t y, uint16_t *bitmap,
+                                  uint8_t *mask, int16_t w, int16_t h);
+  void draw16bitRGBBitmap(int16_t x, int16_t y, const uint16_t bitmap[],
+                          int16_t w, int16_t h);
+  void draw16bitRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w,
+                          int16_t h);
+  void draw16bitRGBBitmapWithTranColor(int16_t x, int16_t y, uint16_t *bitmap,
+                                       uint16_t transparent_color, int16_t w,
+                                       int16_t h);
+  void draw16bitBeRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w,
+                            int16_t h);
+  void draw24bitRGBBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                          int16_t w, int16_t h);
+  void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+                          int16_t h);
+  void drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color,
+                uint16_t bg);
 #else  // !defined(LITTLE_FOOT_PRINT)
-  virtual void writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
-  virtual void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h, uint16_t color, uint16_t bg);
-  virtual void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg);
-  virtual void drawGrayscaleBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h);
-  virtual void drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h);
-  virtual void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint16_t *color_index, int16_t w, int16_t h, int16_t x_skip = 0);
-  virtual void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap, uint16_t *color_index, uint8_t chroma_key, int16_t w, int16_t h, int16_t x_skip = 0);
-  virtual void draw3bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h);
-  virtual void draw16bitRGBBitmapWithMask(int16_t x, int16_t y, uint16_t *bitmap, uint8_t *mask, int16_t w, int16_t h);
-  virtual void draw16bitRGBBitmap(int16_t x, int16_t y, const uint16_t bitmap[], int16_t w, int16_t h);
-  virtual void draw16bitRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
-  virtual void draw16bitRGBBitmapWithTranColor(int16_t x, int16_t y, uint16_t *bitmap, uint16_t transparent_color, int16_t w, int16_t h);
-  virtual void draw16bitBeRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
-  virtual void draw24bitRGBBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h);
-  virtual void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h);
-  virtual void drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg);
+  virtual void writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+                              uint16_t color);
+  virtual void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                          int16_t w, int16_t h, uint16_t color, uint16_t bg);
+  virtual void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+                          int16_t h, uint16_t color, uint16_t bg);
+  virtual void drawGrayscaleBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                                   int16_t w, int16_t h);
+  virtual void drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                   int16_t w, int16_t h);
+  virtual void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                 uint16_t *color_index, int16_t w, int16_t h,
+                                 int16_t x_skip = 0);
+  virtual void drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                 uint16_t *color_index, uint8_t chroma_key,
+                                 int16_t w, int16_t h, int16_t x_skip = 0);
+  virtual void draw3bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                 int16_t w, int16_t h);
+  virtual void draw16bitRGBBitmapWithMask(int16_t x, int16_t y,
+                                          uint16_t *bitmap, uint8_t *mask,
+                                          int16_t w, int16_t h);
+  virtual void draw16bitRGBBitmap(int16_t x, int16_t y, const uint16_t bitmap[],
+                                  int16_t w, int16_t h);
+  virtual void draw16bitRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap,
+                                  int16_t w, int16_t h);
+  virtual void draw16bitRGBBitmapWithTranColor(int16_t x, int16_t y,
+                                               uint16_t *bitmap,
+                                               uint16_t transparent_color,
+                                               int16_t w, int16_t h);
+  virtual void draw16bitBeRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap,
+                                    int16_t w, int16_t h);
+  virtual void draw24bitRGBBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                                  int16_t w, int16_t h);
+  virtual void draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                  int16_t w, int16_t h);
+  virtual void drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color,
+                        uint16_t bg);
 
-  virtual void draw16bitBeRGBBitmapR1(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
+  virtual void draw16bitBeRGBBitmapR1(int16_t x, int16_t y, uint16_t *bitmap,
+                                      int16_t w, int16_t h);
 #endif // !defined(LITTLE_FOOT_PRINT)
 
   /**********************************************************************/
@@ -297,8 +373,7 @@ public:
     @param  y    Y coordinate in pixels
   */
   /**********************************************************************/
-  void setCursor(int16_t x, int16_t y)
-  {
+  void setCursor(int16_t x, int16_t y) {
     cursor_x = x;
     cursor_y = y;
   }
@@ -309,8 +384,7 @@ public:
     @param  x    X coordinate in pixels
     @param  y    Y coordinate in pixels
   */
-  void setTextBound(int16_t x, int16_t y, int16_t w, int16_t h)
-  {
+  void setTextBound(int16_t x, int16_t y, int16_t w, int16_t h) {
     _min_text_x = x;
     _min_text_y = y;
     _max_text_x = x + w - 1;
@@ -334,8 +408,7 @@ public:
     @param   bg  16-bit 5-6-5 Color to draw background/fill with
   */
   /**********************************************************************/
-  void setTextColor(uint16_t c, uint16_t bg)
-  {
+  void setTextColor(uint16_t c, uint16_t bg) {
     textcolor = c;
     textbgcolor = bg;
   }
@@ -403,34 +476,27 @@ public:
     @param   blue   8-bit blue brightnesss (0 = off, 255 = max).
     @return  'Packed' 16-bit color value (565 format).
   */
-  uint16_t color565(uint8_t red, uint8_t green, uint8_t blue)
-  {
+  uint16_t color565(uint8_t red, uint8_t green, uint8_t blue) {
     return ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3);
   }
 
 protected:
-  void charBounds(char c, int16_t *x, int16_t *y, int16_t *minx, int16_t *miny, int16_t *maxx, int16_t *maxy);
-  int16_t
-      _width,  ///< Display width as modified by current rotation
-      _height, ///< Display height as modified by current rotation
-      _max_x,  ///< x zero base bound (_width - 1)
-      _max_y,  ///< y zero base bound (_height - 1)
-      _min_text_x,
-      _min_text_y,
-      _max_text_x,
-      _max_text_y,
-      cursor_x, ///< x location to start print()ing text
-      cursor_y; ///< y location to start print()ing text
-  uint16_t
-      textcolor,   ///< 16-bit background color for print()
-      textbgcolor; ///< 16-bit text color for print()
-  uint8_t
-      textsize_x,        ///< Desired magnification in X-axis of text to print()
+  void charBounds(char c, int16_t *x, int16_t *y, int16_t *minx, int16_t *miny,
+                  int16_t *maxx, int16_t *maxy);
+  int16_t _width, ///< Display width as modified by current rotation
+      _height,    ///< Display height as modified by current rotation
+      _max_x,     ///< x zero base bound (_width - 1)
+      _max_y,     ///< y zero base bound (_height - 1)
+      _min_text_x, _min_text_y, _max_text_x, _max_text_y,
+      cursor_x,          ///< x location to start print()ing text
+      cursor_y;          ///< y location to start print()ing text
+  uint16_t textcolor,    ///< 16-bit background color for print()
+      textbgcolor;       ///< 16-bit text color for print()
+  uint8_t textsize_x,    ///< Desired magnification in X-axis of text to print()
       textsize_y,        ///< Desired magnification in Y-axis of text to print()
       text_pixel_margin, ///< Margin for each text pixel
       _rotation;         ///< Display rotation (0 thru 3)
-  bool
-      wrap; ///< If set, 'wrap' text at right edge of display
+  bool wrap;             ///< If set, 'wrap' text at right edge of display
 #if !defined(ATTINY_CORE)
   GFXfont *gfxFont; ///< Pointer to special font
 #endif              // !defined(ATTINY_CORE)
@@ -472,10 +538,9 @@ protected:
 #endif // defined(U8G2_FONT_SUPPORT)
 
 #if defined(LITTLE_FOOT_PRINT)
-  int16_t
-      WIDTH,  ///< This is the 'raw' display width - never changes
-      HEIGHT; ///< This is the 'raw' display height - never changes
-#endif        // defined(LITTLE_FOOT_PRINT)
+  int16_t WIDTH, ///< This is the 'raw' display width - never changes
+      HEIGHT;    ///< This is the 'raw' display height - never changes
+#endif           // defined(LITTLE_FOOT_PRINT)
 
   bool _isRoundMode = false;
   int16_t *_roundMinX;

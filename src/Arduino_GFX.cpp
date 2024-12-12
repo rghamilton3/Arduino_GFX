@@ -5,10 +5,10 @@
  * Arc function come from:
  * https://github.com/lovyan03/LovyanGFX.git
  */
-#include "Arduino_DataBus.h"
 #include "Arduino_GFX.h"
-#include "font/glcdfont.h"
+#include "Arduino_DataBus.h"
 #include "float.h"
+#include "font/glcdfont.h"
 #ifdef __AVR__
 #include <avr/pgmspace.h>
 #elif defined(ESP8266) || defined(ESP32)
@@ -17,15 +17,18 @@
 
 /**************************************************************************/
 /*!
-  @brief  Instatiate a GFX context for graphics! Can only be done by a superclass
+  @brief  Instatiate a GFX context for graphics! Can only be done by a
+  superclass
   @param  w   Display width, in pixels
   @param  h   Display height, in pixels
 */
 /**************************************************************************/
 #if defined(LITTLE_FOOT_PRINT)
-Arduino_GFX::Arduino_GFX(int16_t w, int16_t h) : WIDTH(w), HEIGHT(h)
+Arduino_GFX::Arduino_GFX(int16_t w, int16_t h)
+    : WIDTH(w), HEIGHT(h)
 #else
-Arduino_GFX::Arduino_GFX(int16_t w, int16_t h) : Arduino_G(w, h)
+Arduino_GFX::Arduino_GFX(int16_t w, int16_t h)
+    : Arduino_G(w, h)
 #endif // !defined(LITTLE_FOOT_PRINT)
 {
   _width = WIDTH;
@@ -55,7 +58,8 @@ Arduino_GFX::Arduino_GFX(int16_t w, int16_t h) : Arduino_G(w, h)
 
 /**************************************************************************/
 /*!
-  @brief  Write a line. Check straight or slash line and call corresponding function
+  @brief  Write a line. Check straight or slash line and call corresponding
+  function
   @param  x0      Start point x coordinate
   @param  y0      Start point y coordinate
   @param  x1      End point x coordinate
@@ -64,26 +68,18 @@ Arduino_GFX::Arduino_GFX(int16_t w, int16_t h) : Arduino_G(w, h)
 */
 /**************************************************************************/
 void Arduino_GFX::writeLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
-                            uint16_t color)
-{
-  if (x0 == x1)
-  {
-    if (y0 > y1)
-    {
+                            uint16_t color) {
+  if (x0 == x1) {
+    if (y0 > y1) {
       _swap_int16_t(y0, y1);
     }
     writeFastVLine(x0, y0, y1 - y0 + 1, color);
-  }
-  else if (y0 == y1)
-  {
-    if (x0 > x1)
-    {
+  } else if (y0 == y1) {
+    if (x0 > x1) {
       _swap_int16_t(x0, x1);
     }
     writeFastHLine(x0, y0, x1 - x0 + 1, color);
-  }
-  else
-  {
+  } else {
     writeSlashLine(x0, y0, x1, y1, color);
   }
 }
@@ -99,17 +95,14 @@ void Arduino_GFX::writeLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
 */
 /**************************************************************************/
 void Arduino_GFX::writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
-                                 uint16_t color)
-{
+                                 uint16_t color) {
   bool steep = _diff(y1, y0) > _diff(x1, x0);
-  if (steep)
-  {
+  if (steep) {
     _swap_int16_t(x0, y0);
     _swap_int16_t(x1, y1);
   }
 
-  if (x0 > x1)
-  {
+  if (x0 > x1) {
     _swap_int16_t(x0, x1);
     _swap_int16_t(y0, y1);
   }
@@ -119,19 +112,14 @@ void Arduino_GFX::writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
   int16_t err = dx >> 1;
   int16_t step = (y0 < y1) ? 1 : -1;
 
-  for (; x0 <= x1; x0++)
-  {
-    if (steep)
-    {
+  for (; x0 <= x1; x0++) {
+    if (steep) {
       writePixel(y0, x0, color);
-    }
-    else
-    {
+    } else {
       writePixel(x0, y0, color);
     }
     err -= dy;
-    if (err < 0)
-    {
+    if (err < 0) {
       err += dx;
       y0 += step;
     }
@@ -143,23 +131,15 @@ void Arduino_GFX::writeSlashLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
   @brief  Start a display-writing routine, overwrite in subclasses.
 */
 /**************************************************************************/
-GFX_INLINE void Arduino_GFX::startWrite()
-{
-}
+GFX_INLINE void Arduino_GFX::startWrite() {}
 
-void Arduino_GFX::writePixel(int16_t x, int16_t y, uint16_t color)
-{
-  if (_ordered_in_range(y, 0, _max_y))
-  {
-    if (_isRoundMode)
-    {
-      if (_ordered_in_range(x, _roundMinX[y], _roundMaxX[y]))
-      {
+void Arduino_GFX::writePixel(int16_t x, int16_t y, uint16_t color) {
+  if (_ordered_in_range(y, 0, _max_y)) {
+    if (_isRoundMode) {
+      if (_ordered_in_range(x, _roundMinX[y], _roundMaxX[y])) {
         writePixelPreclipped(x, y, color);
       }
-    }
-    else if (_ordered_in_range(x, 0, _max_x))
-    {
+    } else if (_ordered_in_range(x, 0, _max_x)) {
       writePixelPreclipped(x, y, color);
     }
   }
@@ -173,8 +153,7 @@ void Arduino_GFX::writePixel(int16_t x, int16_t y, uint16_t color)
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::drawPixel(int16_t x, int16_t y, uint16_t color)
-{
+void Arduino_GFX::drawPixel(int16_t x, int16_t y, uint16_t color) {
   startWrite();
   writePixel(x, y, color);
   endWrite();
@@ -182,36 +161,34 @@ void Arduino_GFX::drawPixel(int16_t x, int16_t y, uint16_t color)
 
 /**************************************************************************/
 /*!
-  @brief  Write a perfectly vertical line, overwrite in subclasses if startWrite is defined!
+  @brief  Write a perfectly vertical line, overwrite in subclasses if startWrite
+  is defined!
   @param  x       Top-most x coordinate
   @param  y       Top-most y coordinate
   @param  h       Height in pixels
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::writeFastVLine(int16_t x, int16_t y,
-                                 int16_t h, uint16_t color)
-{
-  for (int16_t i = y; i < y + h; i++)
-  {
+void Arduino_GFX::writeFastVLine(int16_t x, int16_t y, int16_t h,
+                                 uint16_t color) {
+  for (int16_t i = y; i < y + h; i++) {
     writePixel(x, i, color);
   }
 }
 
 /**************************************************************************/
 /*!
-  @brief  Write a perfectly horizontal line, overwrite in subclasses if startWrite is defined!
+  @brief  Write a perfectly horizontal line, overwrite in subclasses if
+  startWrite is defined!
   @param  x       Left-most x coordinate
   @param  y       Left-most y coordinate
   @param  w       Width in pixels
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::writeFastHLine(int16_t x, int16_t y,
-                                 int16_t w, uint16_t color)
-{
-  for (int16_t i = x; i < x + w; i++)
-  {
+void Arduino_GFX::writeFastHLine(int16_t x, int16_t y, int16_t w,
+                                 uint16_t color) {
+  for (int16_t i = x; i < x + w; i++) {
     writePixel(i, y, color);
   }
 }
@@ -237,47 +214,35 @@ void Arduino_GFX::writeFastHLine(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-                                uint16_t color)
-{
-  if (w && h)
-  { // Nonzero width and height?
-    if (w < 0)
-    {             // If negative width...
+                                uint16_t color) {
+  if (w && h) {   // Nonzero width and height?
+    if (w < 0) {  // If negative width...
       x += w + 1; //   Move X to left edge
       w = -w;     //   Use positive width
     }
-    if (x <= _max_x)
-    { // Not off right
-      if (h < 0)
-      {             // If negative height...
-        y += h + 1; //   Move Y to top edge
-        h = -h;     //   Use positive height
+    if (x <= _max_x) { // Not off right
+      if (h < 0) {     // If negative height...
+        y += h + 1;    //   Move Y to top edge
+        h = -h;        //   Use positive height
       }
-      if (y <= _max_y)
-      { // Not off bottom
+      if (y <= _max_y) { // Not off bottom
         int16_t x2 = x + w - 1;
-        if (x2 >= 0)
-        { // Not off left
+        if (x2 >= 0) { // Not off left
           int16_t y2 = y + h - 1;
-          if (y2 >= 0)
-          { // Not off top
+          if (y2 >= 0) { // Not off top
             // Rectangle partly or fully overlaps screen
-            if (x < 0)
-            {
+            if (x < 0) {
               x = 0;
               w = x2 + 1;
             } // Clip left
-            if (y < 0)
-            {
+            if (y < 0) {
               y = 0;
               h = y2 + 1;
             } // Clip top
-            if (x2 > _max_x)
-            {
+            if (x2 > _max_x) {
               w = _max_x - x + 1;
             } // Clip right
-            if (y2 > _max_y)
-            {
+            if (y2 > _max_y) {
               h = _max_y - y + 1;
             } // Clip bottom
             writeFillRectPreclipped(x, y, w, h, color);
@@ -290,7 +255,8 @@ void Arduino_GFX::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
 /**************************************************************************/
 /*!
-  @brief  Write a rectangle completely with one color, overwrite in subclasses if startWrite is defined!
+  @brief  Write a rectangle completely with one color, overwrite in subclasses
+  if startWrite is defined!
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  w       Width in pixels
@@ -298,37 +264,34 @@ void Arduino_GFX::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::writeFillRectPreclipped(int16_t x, int16_t y, int16_t w, int16_t h,
-                                          uint16_t color)
-{
+void Arduino_GFX::writeFillRectPreclipped(int16_t x, int16_t y, int16_t w,
+                                          int16_t h, uint16_t color) {
   // Overwrite in subclasses if desired!
-  for (int16_t i = y; i < y + h; i++)
-  {
+  for (int16_t i = y; i < y + h; i++) {
     writeFastHLine(x, i, w, color);
   }
 }
 
 /**************************************************************************/
 /*!
-  @brief  End a display-writing routine, overwrite in subclasses if startWrite is defined!
+  @brief  End a display-writing routine, overwrite in subclasses if startWrite
+  is defined!
 */
 /**************************************************************************/
-GFX_INLINE void Arduino_GFX::endWrite()
-{
-}
+GFX_INLINE void Arduino_GFX::endWrite() {}
 
 /**************************************************************************/
 /*!
-  @brief  Draw a perfectly vertical line (this is often optimized in a subclass!)
+  @brief  Draw a perfectly vertical line (this is often optimized in a
+  subclass!)
   @param  x       Top-most x coordinate
   @param  y       Top-most y coordinate
   @param  h       Height in pixels
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::drawFastVLine(int16_t x, int16_t y,
-                                int16_t h, uint16_t color)
-{
+void Arduino_GFX::drawFastVLine(int16_t x, int16_t y, int16_t h,
+                                uint16_t color) {
   startWrite();
   writeFastVLine(x, y, h, color);
   endWrite();
@@ -336,16 +299,16 @@ void Arduino_GFX::drawFastVLine(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a perfectly horizontal line (this is often optimized in a subclass!)
+  @brief  Draw a perfectly horizontal line (this is often optimized in a
+  subclass!)
   @param  x       Left-most x coordinate
   @param  y       Left-most y coordinate
   @param  w       Width in pixels
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::drawFastHLine(int16_t x, int16_t y,
-                                int16_t w, uint16_t color)
-{
+void Arduino_GFX::drawFastHLine(int16_t x, int16_t y, int16_t w,
+                                uint16_t color) {
   startWrite();
   writeFastHLine(x, y, w, color);
   endWrite();
@@ -353,7 +316,8 @@ void Arduino_GFX::drawFastHLine(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Fill a rectangle completely with one color. Update in subclasses if desired!
+  @brief  Fill a rectangle completely with one color. Update in subclasses if
+  desired!
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  w       Width in pixels
@@ -362,8 +326,7 @@ void Arduino_GFX::drawFastHLine(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-                           uint16_t color)
-{
+                           uint16_t color) {
   startWrite();
   writeFillRect(x, y, w, h, color);
   endWrite();
@@ -371,12 +334,12 @@ void Arduino_GFX::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 
 /**************************************************************************/
 /*!
-  @brief  Fill the screen completely with one color. Update in subclasses if desired!
+  @brief  Fill the screen completely with one color. Update in subclasses if
+  desired!
   @param  color 16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::fillScreen(uint16_t color)
-{
+void Arduino_GFX::fillScreen(uint16_t color) {
   fillRect(0, 0, _width, _height, color);
 }
 
@@ -391,8 +354,7 @@ void Arduino_GFX::fillScreen(uint16_t color)
 */
 /**************************************************************************/
 void Arduino_GFX::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
-                           uint16_t color)
-{
+                           uint16_t color) {
   // Update in subclasses if desired!
   startWrite();
   writeLine(x0, y0, x1, y1, color);
@@ -408,9 +370,7 @@ void Arduino_GFX::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawCircle(int16_t x, int16_t y,
-                             int16_t r, uint16_t color)
-{
+void Arduino_GFX::drawCircle(int16_t x, int16_t y, int16_t r, uint16_t color) {
   startWrite();
   writeEllipseHelper(x, y, r, r, 0xf, color);
   endWrite();
@@ -423,25 +383,22 @@ void Arduino_GFX::drawCircle(int16_t x, int16_t y,
   @param  y           Center-point y coordinate
   @param  rx          radius of x coordinate
   @param  ry          radius of y coordinate
-  @param  cornername  Mask bit #1 or bit #2 to indicate which quarters of the circle we're doing
+  @param  cornername  Mask bit #1 or bit #2 to indicate which quarters of the
+  circle we're doing
   @param  color       16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::writeEllipseHelper(int32_t x, int32_t y,
-                                     int32_t rx, int32_t ry,
-                                     uint8_t cornername, uint16_t color)
-{
-  if (rx < 0 || ry < 0 || ((rx == 0) && (ry == 0)))
-  {
+void Arduino_GFX::writeEllipseHelper(int32_t x, int32_t y, int32_t rx,
+                                     int32_t ry, uint8_t cornername,
+                                     uint16_t color) {
+  if (rx < 0 || ry < 0 || ((rx == 0) && (ry == 0))) {
     return;
   }
-  if (ry == 0)
-  {
+  if (ry == 0) {
     writeFastHLine(x - rx, y, (ry << 2) + 1, color);
     return;
   }
-  if (rx == 0)
-  {
+  if (rx == 0) {
     writeFastVLine(x, y - ry, (rx << 2) + 1, color);
     return;
   }
@@ -454,24 +411,19 @@ void Arduino_GFX::writeEllipseHelper(int32_t x, int32_t y,
   xt = 0;
   yt = ry;
   s = (ry2 << 1) + rx2 * (1 - (ry << 1));
-  do
-  {
+  do {
     while (s < 0)
       s += ry2 * ((++xt << 2) + 2);
-    if (cornername & 0x1)
-    {
+    if (cornername & 0x1) {
       writeFastHLine(x - xt, y - yt, xt - i, color);
     }
-    if (cornername & 0x2)
-    {
+    if (cornername & 0x2) {
       writeFastHLine(x + i + 1, y - yt, xt - i, color);
     }
-    if (cornername & 0x4)
-    {
+    if (cornername & 0x4) {
       writeFastHLine(x + i + 1, y + yt, xt - i, color);
     }
-    if (cornername & 0x8)
-    {
+    if (cornername & 0x8) {
       writeFastHLine(x - xt, y + yt, xt - i, color);
     }
     i = xt;
@@ -482,24 +434,19 @@ void Arduino_GFX::writeEllipseHelper(int32_t x, int32_t y,
   yt = 0;
   xt = rx;
   s = (rx2 << 1) + ry2 * (1 - (rx << 1));
-  do
-  {
+  do {
     while (s < 0)
       s += rx2 * ((++yt << 2) + 2);
-    if (cornername & 0x1)
-    {
+    if (cornername & 0x1) {
       writeFastVLine(x - xt, y - yt, yt - i, color);
     }
-    if (cornername & 0x2)
-    {
+    if (cornername & 0x2) {
       writeFastVLine(x + xt, y - yt, yt - i, color);
     }
-    if (cornername & 0x4)
-    {
+    if (cornername & 0x4) {
       writeFastVLine(x + xt, y + i + 1, yt - i, color);
     }
-    if (cornername & 0x8)
-    {
+    if (cornername & 0x8) {
       writeFastVLine(x - xt, y + i + 1, yt - i, color);
     }
     i = yt;
@@ -516,9 +463,7 @@ void Arduino_GFX::writeEllipseHelper(int32_t x, int32_t y,
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::fillCircle(int16_t x, int16_t y,
-                             int16_t r, uint16_t color)
-{
+void Arduino_GFX::fillCircle(int16_t x, int16_t y, int16_t r, uint16_t color) {
   startWrite();
   writeFillEllipseHelper(x, y, r, r, 3, 0, color);
   endWrite();
@@ -536,21 +481,17 @@ void Arduino_GFX::fillCircle(int16_t x, int16_t y,
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::writeFillEllipseHelper(int32_t x, int32_t y,
-                                         int32_t rx, int32_t ry,
-                                         uint8_t corners, int16_t delta, uint16_t color)
-{
-  if (rx < 0 || ry < 0 || ((rx == 0) && (ry == 0)))
-  {
+void Arduino_GFX::writeFillEllipseHelper(int32_t x, int32_t y, int32_t rx,
+                                         int32_t ry, uint8_t corners,
+                                         int16_t delta, uint16_t color) {
+  if (rx < 0 || ry < 0 || ((rx == 0) && (ry == 0))) {
     return;
   }
-  if (ry == 0)
-  {
+  if (ry == 0) {
     writeFastHLine(x - rx, y, (ry << 2) + 1, color);
     return;
   }
-  if (rx == 0)
-  {
+  if (rx == 0) {
     writeFastVLine(x, y - ry, (rx << 2) + 1, color);
     return;
   }
@@ -565,18 +506,14 @@ void Arduino_GFX::writeFillEllipseHelper(int32_t x, int32_t y,
   yt = 0;
   xt = rx;
   s = (rx2 << 1) + ry2 * (1 - (rx << 1));
-  do
-  {
-    while (s < 0)
-    {
+  do {
+    while (s < 0) {
       s += rx2 * ((++yt << 2) + 2);
     }
-    if (corners & 1)
-    {
+    if (corners & 1) {
       writeFillRect(x - xt, y - yt, (xt << 1) + 1 + delta, yt - i, color);
     }
-    if (corners & 2)
-    {
+    if (corners & 2) {
       writeFillRect(x - xt, y + i + 1, (xt << 1) + 1 + delta, yt - i, color);
     }
     i = yt;
@@ -586,18 +523,14 @@ void Arduino_GFX::writeFillEllipseHelper(int32_t x, int32_t y,
   xt = 0;
   yt = ry;
   s = (ry2 << 1) + rx2 * (1 - (ry << 1));
-  do
-  {
-    while (s < 0)
-    {
+  do {
+    while (s < 0) {
       s += ry2 * ((++xt << 2) + 2);
     }
-    if (corners & 1)
-    {
+    if (corners & 1) {
       writeFastHLine(x - xt, y - yt, (xt << 1) + 1 + delta, color);
     }
-    if (corners & 2)
-    {
+    if (corners & 2) {
       writeFastHLine(x - xt, y + yt, (xt << 1) + 1 + delta, color);
     }
     s -= (--yt) * rx2 << 2;
@@ -616,8 +549,8 @@ void Arduino_GFX::writeFillEllipseHelper(int32_t x, int32_t y,
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry, uint16_t color)
-{
+void Arduino_GFX::drawEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry,
+                              uint16_t color) {
   startWrite();
   writeEllipseHelper(x, y, rx, ry, 0xf, color);
   endWrite();
@@ -635,8 +568,8 @@ void Arduino_GFX::drawEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry, uint
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::fillEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry, uint16_t color)
-{
+void Arduino_GFX::fillEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry,
+                              uint16_t color) {
   startWrite();
   writeFillEllipseHelper(x, y, rx, ry, 3, 0, color);
   endWrite();
@@ -654,18 +587,15 @@ void Arduino_GFX::fillEllipse(int16_t x, int16_t y, int16_t rx, int16_t ry, uint
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float start, float end, uint16_t color)
-{
-  if (r1 < r2)
-  {
+void Arduino_GFX::drawArc(int16_t x, int16_t y, int16_t r1, int16_t r2,
+                          float start, float end, uint16_t color) {
+  if (r1 < r2) {
     _swap_int16_t(r1, r2);
   }
-  if (r1 < 1)
-  {
+  if (r1 < 1) {
     r1 = 1;
   }
-  if (r2 < 1)
-  {
+  if (r2 < 1) {
     r2 = 1;
   }
   bool equal = fabsf(start - end) < FLT_EPSILON;
@@ -679,8 +609,7 @@ void Arduino_GFX::drawArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float st
   startWrite();
   writeFillArcHelper(x, y, r1, r2, start, start, color);
   writeFillArcHelper(x, y, r1, r2, end, end, color);
-  if (!equal && (fabsf(start - end) <= 0.0001))
-  {
+  if (!equal && (fabsf(start - end) <= 0.0001)) {
     start = .0;
     end = 360.0;
   }
@@ -701,18 +630,15 @@ void Arduino_GFX::drawArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float st
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::fillArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float start, float end, uint16_t color)
-{
-  if (r1 < r2)
-  {
+void Arduino_GFX::fillArc(int16_t x, int16_t y, int16_t r1, int16_t r2,
+                          float start, float end, uint16_t color) {
+  if (r1 < r2) {
     _swap_int16_t(r1, r2);
   }
-  if (r1 < 1)
-  {
+  if (r1 < 1) {
     r1 = 1;
   }
-  if (r2 < 1)
-  {
+  if (r2 < 1) {
     r2 = 1;
   }
   bool equal = fabsf(start - end) < FLT_EPSILON;
@@ -722,8 +648,7 @@ void Arduino_GFX::fillArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float st
     start += 360.0;
   if (end < 0)
     end += 360.0;
-  if (!equal && (fabsf(start - end) <= 0.0001))
-  {
+  if (!equal && (fabsf(start - end) <= 0.0001)) {
     start = .0;
     end = 360.0;
   }
@@ -745,15 +670,15 @@ void Arduino_GFX::fillArc(int16_t x, int16_t y, int16_t r1, int16_t r2, float st
   @param  color   16-bit 5-6-5 Color to fill with
 */
 /**************************************************************************/
-void Arduino_GFX::writeFillArcHelper(int16_t cx, int16_t cy, int16_t oradius, int16_t iradius, float start, float end, uint16_t color)
-{
-  if ((start == 90.0) || (start == 180.0) || (start == 270.0) || (start == 360.0))
-  {
+void Arduino_GFX::writeFillArcHelper(int16_t cx, int16_t cy, int16_t oradius,
+                                     int16_t iradius, float start, float end,
+                                     uint16_t color) {
+  if ((start == 90.0) || (start == 180.0) || (start == 270.0) ||
+      (start == 360.0)) {
     start -= 0.1;
   }
 
-  if ((end == 90.0) || (end == 180.0) || (end == 270.0) || (end == 360.0))
-  {
+  if ((end == 90.0) || (end == 180.0) || (end == 270.0) || (end == 360.0)) {
     end -= 0.1;
   }
 
@@ -775,63 +700,47 @@ void Arduino_GFX::writeFillArcHelper(int16_t cx, int16_t cy, int16_t oradius, in
   int32_t y = -oradius;
   int32_t ye = oradius;
   int32_t xe = oradius + 1;
-  if (!reversed)
-  {
-    if ((end >= 270 || end < 90) && (start >= 270 || start < 90))
-    {
+  if (!reversed) {
+    if ((end >= 270 || end < 90) && (start >= 270 || start < 90)) {
       xs = 0;
-    }
-    else if (end < 270 && end >= 90 && start < 270 && start >= 90)
-    {
+    } else if (end < 270 && end >= 90 && start < 270 && start >= 90) {
       xe = 1;
     }
-    if (end >= 180 && start >= 180)
-    {
+    if (end >= 180 && start >= 180) {
       ye = 0;
-    }
-    else if (end < 180 && start < 180)
-    {
+    } else if (end < 180 && start < 180) {
       y = 0;
     }
   }
-  do
-  {
+  do {
     int32_t y2 = y * y;
     int32_t x = xs;
-    if (x < 0)
-    {
-      while (x * x + y2 >= or2)
-      {
+    if (x < 0) {
+      while (x * x + y2 >= or2) {
         ++x;
       }
-      if (xe != 1)
-      {
+      if (xe != 1) {
         xe = 1 - x;
       }
     }
     float ysslope = (y + swidth) * sslope;
     float yeslope = (y + ewidth) * eslope;
     int32_t len = 0;
-    do
-    {
+    do {
       bool flg1 = start180 != (x <= ysslope);
       bool flg2 = end180 != (x <= yeslope);
       int32_t distance = x * x + y2;
-      if (distance >= ir2 && ((flg1 && flg2) || (reversed && (flg1 || flg2))) && x != xe && distance < or2)
-      {
+      if (distance >= ir2 && ((flg1 && flg2) || (reversed && (flg1 || flg2))) &&
+          x != xe && distance < or2) {
         ++len;
-      }
-      else
-      {
-        if (len)
-        {
+      } else {
+        if (len) {
           writeFastHLine(cx + x - len, cy + y, len, color);
           len = 0;
         }
         if (distance >= or2)
           break;
-        if (x < 0 && distance < ir2)
-        {
+        if (x < 0 && distance < ir2) {
           x = -x;
         }
       }
@@ -850,8 +759,7 @@ void Arduino_GFX::writeFillArcHelper(int16_t cx, int16_t cy, int16_t oradius, in
 */
 /**************************************************************************/
 void Arduino_GFX::drawRect(int16_t x, int16_t y, int16_t w, int16_t h,
-                           uint16_t color)
-{
+                           uint16_t color) {
   startWrite();
   writeFastHLine(x, y, w, color);
   writeFastHLine(x, y + h - 1, w, color);
@@ -871,9 +779,8 @@ void Arduino_GFX::drawRect(int16_t x, int16_t y, int16_t w, int16_t h,
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawRoundRect(int16_t x, int16_t y, int16_t w,
-                                int16_t h, int16_t r, uint16_t color)
-{
+void Arduino_GFX::drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                                int16_t r, uint16_t color) {
   int16_t max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
   if (r > max_radius)
     r = max_radius;
@@ -902,9 +809,8 @@ void Arduino_GFX::drawRoundRect(int16_t x, int16_t y, int16_t w,
   @param  color   16-bit 5-6-5 Color to draw/fill with
 */
 /**************************************************************************/
-void Arduino_GFX::fillRoundRect(int16_t x, int16_t y, int16_t w,
-                                int16_t h, int16_t r, uint16_t color)
-{
+void Arduino_GFX::fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                                int16_t r, uint16_t color) {
   int16_t max_radius = ((w < h) ? w : h) / 2; // 1/2 minor axis
   if (r > max_radius)
     r = max_radius;
@@ -929,9 +835,8 @@ void Arduino_GFX::fillRoundRect(int16_t x, int16_t y, int16_t w,
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawTriangle(int16_t x0, int16_t y0,
-                               int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color)
-{
+void Arduino_GFX::drawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+                               int16_t x2, int16_t y2, uint16_t color) {
   startWrite();
   writeLine(x0, y0, x1, y1, color);
   writeLine(x1, y1, x2, y2, color);
@@ -951,31 +856,26 @@ void Arduino_GFX::drawTriangle(int16_t x0, int16_t y0,
   @param  color   16-bit 5-6-5 Color to fill/draw with
 */
 /**************************************************************************/
-void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
-                               int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color)
-{
+void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
+                               int16_t x2, int16_t y2, uint16_t color) {
   int16_t a, b, y, last;
 
   // Sort coordinates by Y order (y2 >= y1 >= y0)
-  if (y0 > y1)
-  {
+  if (y0 > y1) {
     _swap_int16_t(y0, y1);
     _swap_int16_t(x0, x1);
   }
-  if (y1 > y2)
-  {
+  if (y1 > y2) {
     _swap_int16_t(y2, y1);
     _swap_int16_t(x2, x1);
   }
-  if (y0 > y1)
-  {
+  if (y0 > y1) {
     _swap_int16_t(y0, y1);
     _swap_int16_t(x0, x1);
   }
 
   startWrite();
-  if (y0 == y2)
-  { // Handle awkward all-on-same-line case as its own thing
+  if (y0 == y2) { // Handle awkward all-on-same-line case as its own thing
     a = b = x0;
     if (x1 < a)
       a = x1;
@@ -990,16 +890,9 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
     return;
   }
 
-  int16_t
-      dx01 = x1 - x0,
-      dy01 = y1 - y0,
-      dx02 = x2 - x0,
-      dy02 = y2 - y0,
-      dx12 = x2 - x1,
-      dy12 = y2 - y1;
-  int32_t
-      sa = 0,
-      sb = 0;
+  int16_t dx01 = x1 - x0, dy01 = y1 - y0, dx02 = x2 - x0, dy02 = y2 - y0,
+          dx12 = x2 - x1, dy12 = y2 - y1;
+  int32_t sa = 0, sb = 0;
 
   // For upper part of triangle, find scanline crossings for segments
   // 0-1 and 0-2.  If y1=y2 (flat-bottomed triangle), the scanline y1
@@ -1007,17 +900,13 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
   // error there), otherwise scanline y1 is skipped here and handled
   // in the second loop...which also avoids a /0 error here if y0=y1
   // (flat-topped triangle).
-  if (y1 == y2)
-  {
+  if (y1 == y2) {
     last = y1; // Include y1 scanline
-  }
-  else
-  {
+  } else {
     last = y1 - 1; // Skip it
   }
 
-  for (y = y0; y <= last; y++)
-  {
+  for (y = y0; y <= last; y++) {
     a = x0 + sa / dy01;
     b = x0 + sb / dy02;
     sa += dx01;
@@ -1026,8 +915,7 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
     a = x0 + (x1 - x0) * (y - y0) / (y1 - y0);
     b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
     */
-    if (a > b)
-    {
+    if (a > b) {
       _swap_int16_t(a, b);
     }
     writeFastHLine(a, y, b - a + 1, color);
@@ -1037,8 +925,7 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
   // 0-2 and 1-2.  This loop is skipped if y1=y2.
   sa = (int32_t)dx12 * (y - y1);
   sb = (int32_t)dx02 * (y - y0);
-  for (; y <= y2; y++)
-  {
+  for (; y <= y2; y++) {
     a = x1 + sa / dy12;
     b = x0 + sb / dy02;
     sa += dx12;
@@ -1047,8 +934,7 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
     a = x1 + (x2 - x1) * (y - y1) / (y2 - y1);
     b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
     */
-    if (a > b)
-    {
+    if (a > b) {
       _swap_int16_t(a, b);
     }
     writeFastHLine(a, y, b - a + 1, color);
@@ -1060,7 +946,8 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a PROGMEM-resident 1-bit image at the specified (x,y) position, using the specified foreground color (unset bits are transparent).
+  @brief  Draw a PROGMEM-resident 1-bit image at the specified (x,y) position,
+  using the specified foreground color (unset bits are transparent).
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with monochrome bitmap
@@ -1069,27 +956,20 @@ void Arduino_GFX::fillTriangle(int16_t x0, int16_t y0,
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
-                             const uint8_t bitmap[], int16_t w, int16_t h, uint16_t color)
-{
+void Arduino_GFX::drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                             int16_t w, int16_t h, uint16_t color) {
   int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
   uint8_t byte = 0;
 
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = pgm_read_byte(&bitmap[j * byteWidth + i / 8]);
       }
-      if (byte & 0x80)
-      {
+      if (byte & 0x80) {
         writePixel(x + i, y, color);
       }
     }
@@ -1099,7 +979,9 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a PROGMEM-resident 1-bit image at the specified (x,y) position, using the specified foreground (for set bits) and background (unset bits) colors.
+  @brief  Draw a PROGMEM-resident 1-bit image at the specified (x,y) position,
+  using the specified foreground (for set bits) and background (unset bits)
+  colors.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with monochrome bitmap
@@ -1109,24 +991,18 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
   @param  bg      16-bit 5-6-5 Color to draw background with
 */
 /**************************************************************************/
-void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
-                             const uint8_t bitmap[], int16_t w, int16_t h,
-                             uint16_t color, uint16_t bg)
-{
+void Arduino_GFX::drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                             int16_t w, int16_t h, uint16_t color,
+                             uint16_t bg) {
   int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
   uint8_t byte = 0;
 
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = pgm_read_byte(&bitmap[j * byteWidth + i / 8]);
       }
       writePixel(x + i, y, (byte & 0x80) ? color : bg);
@@ -1137,7 +1013,8 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 1-bit image at the specified (x,y) position, using the specified foreground color (unset bits are transparent).
+  @brief  Draw a RAM-resident 1-bit image at the specified (x,y) position, using
+  the specified foreground color (unset bits are transparent).
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with monochrome bitmap
@@ -1146,27 +1023,20 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
   @param  color   16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
-                             uint8_t *bitmap, int16_t w, int16_t h, uint16_t color)
-{
+void Arduino_GFX::drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+                             int16_t h, uint16_t color) {
   int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
   uint8_t byte = 0;
 
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = bitmap[j * byteWidth + i / 8];
       }
-      if (byte & 0x80)
-      {
+      if (byte & 0x80) {
         writePixel(x + i, y, color);
       }
     }
@@ -1176,7 +1046,8 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 1-bit image at the specified (x,y) position, using the specified foreground (for set bits) and background (unset bits) colors.
+  @brief  Draw a RAM-resident 1-bit image at the specified (x,y) position, using
+  the specified foreground (for set bits) and background (unset bits) colors.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with monochrome bitmap
@@ -1186,23 +1057,17 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
   @param  bg      16-bit 5-6-5 Color to draw background with
 */
 /**************************************************************************/
-void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
-                             uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg)
-{
+void Arduino_GFX::drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w,
+                             int16_t h, uint16_t color, uint16_t bg) {
   int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
   uint8_t byte = 0;
 
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = bitmap[j * byteWidth + i / 8];
       }
       writePixel(x + i, y, (byte & 0x80) ? color : bg);
@@ -1226,29 +1091,22 @@ void Arduino_GFX::drawBitmap(int16_t x, int16_t y,
   @param  color   16-bit 5-6-5 Color to draw pixels with
 */
 /**************************************************************************/
-void Arduino_GFX::drawXBitmap(int16_t x, int16_t y,
-                              const uint8_t bitmap[], int16_t w, int16_t h, uint16_t color)
-{
+void Arduino_GFX::drawXBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                              int16_t w, int16_t h, uint16_t color) {
   int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
   uint8_t byte = 0;
 
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte >>= 1;
-      }
-      else
-      {
+      } else {
         byte = pgm_read_byte(&bitmap[j * byteWidth + i / 8]);
       }
       // Nearly identical to drawBitmap(), only the bit order
       // is reversed here (left-to-right = LSB to MSB):
-      if (byte & 0x01)
-      {
+      if (byte & 0x01) {
         writePixel(x + i, y, color);
       }
     }
@@ -1258,7 +1116,8 @@ void Arduino_GFX::drawXBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a PROGMEM-resident 8-bit image (grayscale) at the specified (x,y) pos.
+  @brief  Draw a PROGMEM-resident 8-bit image (grayscale) at the specified (x,y)
+  pos.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with grayscale bitmap
@@ -1267,14 +1126,12 @@ void Arduino_GFX::drawXBitmap(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
-                                      const uint8_t bitmap[], int16_t w, int16_t h)
-{
+                                      const uint8_t bitmap[], int16_t w,
+                                      int16_t h) {
   uint8_t v;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       v = pgm_read_byte(&bitmap[j * w + i]);
       writePixel(x + i, y, color565(v, v, v));
     }
@@ -1284,7 +1141,8 @@ void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 8-bit image (grayscale) at the specified (x,y) pos.
+  @brief  Draw a RAM-resident 8-bit image (grayscale) at the specified (x,y)
+  pos.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with grayscale bitmap
@@ -1292,15 +1150,12 @@ void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
-                                      uint8_t *bitmap, int16_t w, int16_t h)
-{
+void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                      int16_t w, int16_t h) {
   uint8_t v;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       v = bitmap[j * w + i];
       writePixel(x + i, y, color565(v, v, v));
     }
@@ -1322,27 +1177,21 @@ void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
-                                      const uint8_t bitmap[], const uint8_t mask[],
-                                      int16_t w, int16_t h)
-{
+                                      const uint8_t bitmap[],
+                                      const uint8_t mask[], int16_t w,
+                                      int16_t h) {
   int16_t bw = (w + 7) / 8; // Bitmask scanline pad = whole byte
   uint8_t byte = 0;
   uint8_t v;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = pgm_read_byte(&mask[j * bw + i / 8]);
       }
-      if (byte & 0x80)
-      {
+      if (byte & 0x80) {
         v = pgm_read_byte(&bitmap[j * w + i]);
         writePixel(x + i, y, color565(v, v, v));
       }
@@ -1364,27 +1213,20 @@ void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
-                                      uint8_t *bitmap, uint8_t *mask, int16_t w, int16_t h)
-{
+void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                      uint8_t *mask, int16_t w, int16_t h) {
   int16_t bw = (w + 7) / 8; // Bitmask scanline pad = whole byte
   uint8_t byte = 0;
   uint8_t v;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = mask[j * bw + i / 8];
       }
-      if (byte & 0x80)
-      {
+      if (byte & 0x80) {
         v = bitmap[j * w + i];
         writePixel(x + i, y, color565(v, v, v));
       }
@@ -1395,7 +1237,8 @@ void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a Indexed 16-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a Indexed 16-bit image (RGB 5/6/5) at the specified (x,y)
+  position.
   @param  x           Top left corner x coordinate
   @param  y           Top left corner y coordinate
   @param  bitmap      byte array of Indexed color bitmap
@@ -1405,16 +1248,13 @@ void Arduino_GFX::drawGrayscaleBitmap(int16_t x, int16_t y,
   @param  x_skip      number of pixels required to skip for every bitmap row
 */
 /**************************************************************************/
-void Arduino_GFX::drawIndexedBitmap(
-    int16_t x, int16_t y,
-    uint8_t *bitmap, uint16_t *color_index, int16_t w, int16_t h, int16_t x_skip)
-{
+void Arduino_GFX::drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                    uint16_t *color_index, int16_t w, int16_t h,
+                                    int16_t x_skip) {
   int32_t offset = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       writePixel(x + i, y, color_index[bitmap[offset++]]);
     }
     offset += x_skip;
@@ -1424,7 +1264,8 @@ void Arduino_GFX::drawIndexedBitmap(
 
 /**************************************************************************/
 /*!
-  @brief  Draw a Indexed 16-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a Indexed 16-bit image (RGB 5/6/5) at the specified (x,y)
+  position.
   @param  x           Top left corner x coordinate
   @param  y           Top left corner y coordinate
   @param  bitmap      byte array of Indexed color bitmap
@@ -1435,20 +1276,16 @@ void Arduino_GFX::drawIndexedBitmap(
   @param  x_skip      number of pixels required to skip for every bitmap row
 */
 /**************************************************************************/
-void Arduino_GFX::drawIndexedBitmap(
-    int16_t x, int16_t y,
-    uint8_t *bitmap, uint16_t *color_index, uint8_t chroma_key, int16_t w, int16_t h, int16_t x_skip)
-{
+void Arduino_GFX::drawIndexedBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                    uint16_t *color_index, uint8_t chroma_key,
+                                    int16_t w, int16_t h, int16_t x_skip) {
   int32_t offset = 0;
   uint8_t color_key;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       color_key = bitmap[offset++];
-      if (color_key != chroma_key)
-      {
+      if (color_key != chroma_key) {
         writePixel(x + i, y, color_index[color_key]);
       }
     }
@@ -1459,7 +1296,8 @@ void Arduino_GFX::drawIndexedBitmap(
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 3-bit image (RGB 1/1/1) at the specified (x,y) position.
+  @brief  Draw a RAM-resident 3-bit image (RGB 1/1/1) at the specified (x,y)
+  position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 3-bit color bitmap
@@ -1467,28 +1305,20 @@ void Arduino_GFX::drawIndexedBitmap(
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw3bitRGBBitmap(int16_t x, int16_t y,
-                                    uint8_t *bitmap, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw3bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                    int16_t w, int16_t h) {
   int32_t offset = 0, idx = 0;
   uint8_t c = 0;
   uint16_t d;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (offset & 1)
-      {
-        d = (((c & 0b100) ? RED : 0) |
-             ((c & 0b010) ? GREEN : 0) |
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (offset & 1) {
+        d = (((c & 0b100) ? RED : 0) | ((c & 0b010) ? GREEN : 0) |
              ((c & 0b001) ? BLUE : 0));
-      }
-      else
-      {
+      } else {
         c = bitmap[idx++];
-        d = (((c & 0b100000) ? RED : 0) |
-             ((c & 0b010000) ? GREEN : 0) |
+        d = (((c & 0b100000) ? RED : 0) | ((c & 0b010000) ? GREEN : 0) |
              ((c & 0b001000) ? BLUE : 0));
       }
       writePixel(x + i, y, d);
@@ -1500,7 +1330,8 @@ void Arduino_GFX::draw3bitRGBBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a PROGMEM-resident 16-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a PROGMEM-resident 16-bit image (RGB 5/6/5) at the specified
+  (x,y) position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1509,14 +1340,12 @@ void Arduino_GFX::draw3bitRGBBitmap(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y,
-                                     const uint16_t bitmap[], int16_t w, int16_t h)
-{
+                                     const uint16_t bitmap[], int16_t w,
+                                     int16_t h) {
   int32_t offset = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       writePixel(x + i, y, pgm_read_word(&bitmap[offset++]));
     }
   }
@@ -1525,7 +1354,8 @@ void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 16-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a RAM-resident 16-bit image (RGB 5/6/5) at the specified (x,y)
+  position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1533,15 +1363,12 @@ void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y,
-                                     uint16_t *bitmap, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap,
+                                     int16_t w, int16_t h) {
   int32_t offset = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       writePixel(x + i, y, bitmap[offset++]);
     }
   }
@@ -1550,7 +1377,8 @@ void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 16-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a RAM-resident 16-bit image (RGB 5/6/5) at the specified (x,y)
+  position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1559,20 +1387,17 @@ void Arduino_GFX::draw16bitRGBBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw16bitRGBBitmapWithTranColor(
-    int16_t x, int16_t y,
-    uint16_t *bitmap, uint16_t transparent_color, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw16bitRGBBitmapWithTranColor(int16_t x, int16_t y,
+                                                  uint16_t *bitmap,
+                                                  uint16_t transparent_color,
+                                                  int16_t w, int16_t h) {
   int32_t offset = 0;
   uint16_t color;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       color = bitmap[offset++];
-      if (color != transparent_color)
-      {
+      if (color != transparent_color) {
         writePixel(x + i, y, color);
       }
     }
@@ -1582,7 +1407,8 @@ void Arduino_GFX::draw16bitRGBBitmapWithTranColor(
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 16-bit Big Endian image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a RAM-resident 16-bit Big Endian image (RGB 5/6/5) at the
+  specified (x,y) position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1590,16 +1416,13 @@ void Arduino_GFX::draw16bitRGBBitmapWithTranColor(
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw16bitBeRGBBitmap(int16_t x, int16_t y,
-                                       uint16_t *bitmap, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw16bitBeRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap,
+                                       int16_t w, int16_t h) {
   int32_t offset = 0;
   uint16_t p;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
       p = bitmap[offset++];
       MSB_16_SET(p, p);
       writePixel(x + i, y, p);
@@ -1611,7 +1434,8 @@ void Arduino_GFX::draw16bitBeRGBBitmap(int16_t x, int16_t y,
 #if !defined(LITTLE_FOOT_PRINT)
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 16-bit Big Endian image (RGB 5/6/5) in rotation 1 at the specified (x,y) position.
+  @brief  Draw a RAM-resident 16-bit Big Endian image (RGB 5/6/5) in rotation 1
+  at the specified (x,y) position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1619,16 +1443,13 @@ void Arduino_GFX::draw16bitBeRGBBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw16bitBeRGBBitmapR1(int16_t x, int16_t y,
-                                       uint16_t *bitmap, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw16bitBeRGBBitmapR1(int16_t x, int16_t y, uint16_t *bitmap,
+                                         int16_t w, int16_t h) {
   int32_t offset = 0;
   uint16_t p;
   startWrite();
-  for (int16_t j = 0; j < h; j++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
+  for (int16_t j = 0; j < h; j++) {
+    for (int16_t i = 0; i < w; i++) {
       p = bitmap[offset++];
       MSB_16_SET(p, p);
       writePixel(x + w - j - 1, y + i, p);
@@ -1652,27 +1473,21 @@ void Arduino_GFX::draw16bitBeRGBBitmapR1(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::draw16bitRGBBitmapWithMask(int16_t x, int16_t y,
-                                             const uint16_t bitmap[], const uint8_t mask[],
-                                             int16_t w, int16_t h)
-{
+                                             const uint16_t bitmap[],
+                                             const uint8_t mask[], int16_t w,
+                                             int16_t h) {
   int32_t offset = 0;
   int16_t bw = (w + 7) / 8; // Bitmask scanline pad = whole byte
   uint8_t byte = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = pgm_read_byte(&mask[j * bw + i / 8]);
       }
-      if (byte & 0x80)
-      {
+      if (byte & 0x80) {
         writePixel(x + i, y, pgm_read_word(&bitmap[offset]));
       }
       offset++;
@@ -1695,25 +1510,19 @@ void Arduino_GFX::draw16bitRGBBitmapWithMask(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::draw16bitRGBBitmapWithMask(int16_t x, int16_t y,
-                                             uint16_t *bitmap, uint8_t *mask, int16_t w, int16_t h)
-{
+                                             uint16_t *bitmap, uint8_t *mask,
+                                             int16_t w, int16_t h) {
   int32_t offset = 0, maskIdx = 0;
   uint8_t byte = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = mask[maskIdx++];
       }
-      if (byte & 0x80)
-      {
+      if (byte & 0x80) {
         writePixel(x + i, y, bitmap[offset]);
       }
       offset++;
@@ -1724,7 +1533,8 @@ void Arduino_GFX::draw16bitRGBBitmapWithMask(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a PROGMEM-resident 24-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a PROGMEM-resident 24-bit image (RGB 5/6/5) at the specified
+  (x,y) position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1733,15 +1543,16 @@ void Arduino_GFX::draw16bitRGBBitmapWithMask(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
-                                     const uint8_t bitmap[], int16_t w, int16_t h)
-{
+                                     const uint8_t bitmap[], int16_t w,
+                                     int16_t h) {
   int32_t offset = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      writePixel(x + i, y, color565(pgm_read_byte(&bitmap[offset]), pgm_read_byte(&bitmap[offset + 1]), pgm_read_byte(&bitmap[offset + 2])));
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      writePixel(x + i, y,
+                 color565(pgm_read_byte(&bitmap[offset]),
+                          pgm_read_byte(&bitmap[offset + 1]),
+                          pgm_read_byte(&bitmap[offset + 2])));
       offset += 3;
     }
   }
@@ -1750,7 +1561,8 @@ void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Draw a RAM-resident 24-bit image (RGB 5/6/5) at the specified (x,y) position.
+  @brief  Draw a RAM-resident 24-bit image (RGB 5/6/5) at the specified (x,y)
+  position.
   @param  x       Top left corner x coordinate
   @param  y       Top left corner y coordinate
   @param  bitmap  byte array with 16-bit color bitmap
@@ -1758,16 +1570,15 @@ void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
-                                     uint8_t *bitmap, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                     int16_t w, int16_t h) {
   int32_t offset = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      writePixel(x + i, y, color565(bitmap[offset], bitmap[offset + 1], bitmap[offset + 2]));
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      writePixel(
+          x + i, y,
+          color565(bitmap[offset], bitmap[offset + 1], bitmap[offset + 2]));
       offset += 3;
     }
   }
@@ -1788,28 +1599,25 @@ void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
-                                     const uint8_t bitmap[], const uint8_t mask[],
-                                     int16_t w, int16_t h)
-{
+                                     const uint8_t bitmap[],
+                                     const uint8_t mask[], int16_t w,
+                                     int16_t h) {
   int32_t offset = 0;
   int16_t bw = (w + 7) / 8; // Bitmask scanline pad = whole byte
   uint8_t byte = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = pgm_read_byte(&mask[j * bw + i / 8]);
       }
-      if (byte & 0x80)
-      {
-        writePixel(x + i, y, color565(pgm_read_byte(&bitmap[offset]), pgm_read_byte(&bitmap[offset + 1]), pgm_read_byte(&bitmap[offset + 2])));
+      if (byte & 0x80) {
+        writePixel(x + i, y,
+                   color565(pgm_read_byte(&bitmap[offset]),
+                            pgm_read_byte(&bitmap[offset + 1]),
+                            pgm_read_byte(&bitmap[offset + 2])));
       }
       offset += 3;
     }
@@ -1830,28 +1638,23 @@ void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
   @param  h       Height of bitmap in pixels
 */
 /**************************************************************************/
-void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
-                                     uint8_t *bitmap, uint8_t *mask, int16_t w, int16_t h)
-{
+void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y, uint8_t *bitmap,
+                                     uint8_t *mask, int16_t w, int16_t h) {
   int32_t offset = 0;
   int16_t bw = (w + 7) / 8; // Bitmask scanline pad = whole byte
   uint8_t byte = 0;
   startWrite();
-  for (int16_t j = 0; j < h; j++, y++)
-  {
-    for (int16_t i = 0; i < w; i++)
-    {
-      if (i & 7)
-      {
+  for (int16_t j = 0; j < h; j++, y++) {
+    for (int16_t i = 0; i < w; i++) {
+      if (i & 7) {
         byte <<= 1;
-      }
-      else
-      {
+      } else {
         byte = mask[j * bw + i / 8];
       }
-      if (byte & 0x80)
-      {
-        writePixel(x + i, y, color565(bitmap[offset], bitmap[offset + 1], bitmap[offset + 2]));
+      if (byte & 0x80) {
+        writePixel(
+            x + i, y,
+            color565(bitmap[offset], bitmap[offset + 1], bitmap[offset + 2]));
       }
       offset += 3;
     }
@@ -1860,8 +1663,7 @@ void Arduino_GFX::draw24bitRGBBitmap(int16_t x, int16_t y,
 }
 
 #if defined(U8G2_FONT_SUPPORT)
-uint16_t Arduino_GFX::u8g2_font_get_word(const uint8_t *font, uint8_t offset)
-{
+uint16_t Arduino_GFX::u8g2_font_get_word(const uint8_t *font, uint8_t offset) {
   uint16_t pos;
   font += offset;
   pos = pgm_read_byte(font);
@@ -1872,8 +1674,7 @@ uint16_t Arduino_GFX::u8g2_font_get_word(const uint8_t *font, uint8_t offset)
   return pos;
 }
 
-uint8_t Arduino_GFX::u8g2_font_decode_get_unsigned_bits(uint8_t cnt)
-{
+uint8_t Arduino_GFX::u8g2_font_decode_get_unsigned_bits(uint8_t cnt) {
   uint8_t val;
   uint8_t bit_pos = _u8g2_decode_bit_pos;
   uint8_t bit_pos_plus_cnt;
@@ -1883,8 +1684,7 @@ uint8_t Arduino_GFX::u8g2_font_decode_get_unsigned_bits(uint8_t cnt)
   val >>= bit_pos;
   bit_pos_plus_cnt = bit_pos;
   bit_pos_plus_cnt += cnt;
-  if (bit_pos_plus_cnt >= 8)
-  {
+  if (bit_pos_plus_cnt >= 8) {
     uint8_t s = 8;
     s -= bit_pos;
     _u8g2_decode_ptr++;
@@ -1898,8 +1698,7 @@ uint8_t Arduino_GFX::u8g2_font_decode_get_unsigned_bits(uint8_t cnt)
   return val;
 }
 
-int8_t Arduino_GFX::u8g2_font_decode_get_signed_bits(uint8_t cnt)
-{
+int8_t Arduino_GFX::u8g2_font_decode_get_signed_bits(uint8_t cnt) {
   int8_t v, d;
   v = (int8_t)u8g2_font_decode_get_unsigned_bits(cnt);
   d = 1;
@@ -1910,11 +1709,12 @@ int8_t Arduino_GFX::u8g2_font_decode_get_signed_bits(uint8_t cnt)
   return v;
 }
 
-void Arduino_GFX::u8g2_font_decode_len(uint8_t len, uint8_t is_foreground, uint16_t color, uint16_t bg)
-{
-  uint8_t cnt;     /* total number of remaining pixels, which have to be drawn */
-  uint8_t rem;     /* remaining pixel to the right edge of the glyph */
-  uint8_t current; /* number of pixels, which need to be drawn for the draw procedure */
+void Arduino_GFX::u8g2_font_decode_len(uint8_t len, uint8_t is_foreground,
+                                       uint16_t color, uint16_t bg) {
+  uint8_t cnt; /* total number of remaining pixels, which have to be drawn */
+  uint8_t rem; /* remaining pixel to the right edge of the glyph */
+  uint8_t current; /* number of pixels, which need to be drawn for the draw
+                      procedure */
   /* current is either equal to cnt or equal to rem */
 
   /* target position on the screen */
@@ -1927,8 +1727,7 @@ void Arduino_GFX::u8g2_font_decode_len(uint8_t len, uint8_t is_foreground, uint1
   uint8_t ly = _u8g2_dy;
 
   int16_t curW;
-  for (;;)
-  {
+  for (;;) {
     /* calculate the number of pixel to the right edge of the glyph */
     rem = _u8g2_char_width;
     rem -= lx;
@@ -1939,56 +1738,45 @@ void Arduino_GFX::u8g2_font_decode_len(uint8_t len, uint8_t is_foreground, uint1
     if (cnt < rem)
       current = cnt;
 
-    /* now draw the line, but apply the rotation around the glyph target position */
+    /* now draw the line, but apply the rotation around the glyph target
+     * position */
     // u8g2_font_decode_draw_pixel(u8g2, lx,ly,current, is_foreground);
 
-    if (textsize_x == 1 && textsize_y == 1)
-    {
+    if (textsize_x == 1 && textsize_y == 1) {
       /* get target position */
       x = _u8g2_target_x + lx;
       y = _u8g2_target_y + ly;
 
       /* draw foreground and background (if required) */
-      if ((x <= _max_text_x) && (y <= _max_text_y))
-      {
+      if ((x <= _max_text_x) && (y <= _max_text_y)) {
         curW = current;
-        if ((x + curW - 1) > _max_text_x)
-        {
+        if ((x + curW - 1) > _max_text_x) {
           curW = _max_text_x - x + 1;
         }
-        if (is_foreground)
-        {
+        if (is_foreground) {
           writeFillRect(x, y, curW, 1, color);
-        }
-        else if (bg != color)
-        {
+        } else if (bg != color) {
           writeFillRect(x, y, curW, 1, bg);
         }
       }
-    }
-    else
-    {
+    } else {
       /* get target position */
       x = _u8g2_target_x + (lx * textsize_x);
       y = _u8g2_target_y + (ly * textsize_y);
 
       /* draw foreground and background (if required) */
-      if (((x + textsize_x - 1) <= _max_text_x) && ((y + textsize_y - 1) <= _max_text_y))
-      {
+      if (((x + textsize_x - 1) <= _max_text_x) &&
+          ((y + textsize_y - 1) <= _max_text_y)) {
         curW = current * textsize_x;
-        while ((x + curW - 1) > _max_text_x)
-        {
+        while ((x + curW - 1) > _max_text_x) {
           curW -= textsize_x;
         }
-        if (is_foreground)
-        {
+        if (is_foreground) {
           writeFillRect(x, y, curW - text_pixel_margin,
-                                  textsize_y - text_pixel_margin, color);
-        }
-        else if (bg != color)
-        {
+                        textsize_y - text_pixel_margin, color);
+        } else if (bg != color) {
           writeFillRect(x, y, curW - text_pixel_margin,
-                                  textsize_y - text_pixel_margin, bg);
+                        textsize_y - text_pixel_margin, bg);
         }
       }
     }
@@ -2017,12 +1805,12 @@ void Arduino_GFX::u8g2_font_decode_len(uint8_t len, uint8_t is_foreground, uint1
   @param  y       Bottom left corner y coordinate
   @param  c       The 8-bit font-indexed character (likely ascii)
   @param  color   16-bit 5-6-5 Color to draw chraracter with
-  @param  bg      16-bit 5-6-5 Color to fill background with (if same as color, no background)
+  @param  bg      16-bit 5-6-5 Color to fill background with (if same as color,
+  no background)
 */
 /**************************************************************************/
 void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
-                           uint16_t color, uint16_t bg)
-{
+                           uint16_t color, uint16_t bg) {
   int16_t block_w, block_h, curX, curY, curW, curH;
 
 #if !defined(ATTINY_CORE)
@@ -2037,11 +1825,12 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
     uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
 
     uint16_t bo = pgm_read_word(&glyph->bitmapOffset);
-    uint8_t w = pgm_read_byte(&glyph->width),
-            h = pgm_read_byte(&glyph->height),
+    uint8_t w = pgm_read_byte(&glyph->width), h = pgm_read_byte(&glyph->height),
             xAdvance = pgm_read_byte(&glyph->xAdvance),
             yAdvance = pgm_read_byte(&gfxFont->yAdvance),
-            baseline = yAdvance * 2 / 3; // TODO: baseline is an arbitrary currently, may be define in font file
+            baseline =
+                yAdvance * 2 / 3; // TODO: baseline is an arbitrary currently,
+                                  // may be define in font file
 #ifdef __AVR__
     int8_t xo = pgm_read_byte(&glyph->xOffset),
            yo = pgm_read_byte(&glyph->yOffset);
@@ -2052,85 +1841,68 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
     uint8_t xx, yy, bits = 0, bit = 0;
     int16_t xo16 = xo, yo16 = yo;
 
-    if (xAdvance < w)
-    {
+    if (xAdvance < w) {
       xAdvance = w; // Don't know why it exists
     }
 
     block_w = xAdvance * textsize_x;
     block_h = yAdvance * textsize_y;
     curY = y - (baseline * textsize_y);
-    if (
-        (x > _max_text_x) ||                 // Clip right
+    if ((x > _max_text_x) ||                 // Clip right
         (curY > _max_text_y) ||              // Clip bottom
         ((x + block_w - 1) < _min_text_x) || // Clip left
         ((y + block_h - 1) < _min_text_y)    // Clip top
-    )
-    {
+    ) {
       return;
     }
 
-    // NOTE: Different from Adafruit_GFX design, Arduino_GFX also cater background.
-    // Since it may introduce many ugly output, it should limited using on mono font only.
+    // NOTE: Different from Adafruit_GFX design, Arduino_GFX also cater
+    // background. Since it may introduce many ugly output, it should limited
+    // using on mono font only.
     startWrite();
     if (bg != color) // have background color
     {
       curW = block_w;
-      while ((x + curW - 1) > _max_text_x)
-      {
+      while ((x + curW - 1) > _max_text_x) {
         curW -= textsize_x;
       }
       curH = block_h;
-      while ((curY + curH - 1) > _max_text_y)
-      {
+      while ((curY + curH - 1) > _max_text_y) {
         curH -= textsize_y;
       }
       writeFillRect(x, curY, curW, curH, bg);
     }
-    if (textsize_x == 1 && textsize_y == 1)
-    {
+    if (textsize_x == 1 && textsize_y == 1) {
       curY = y + yo;
-      for (yy = 0; yy < h; ++yy, ++curY)
-      {
-        if (curY <= _max_text_y)
-        {
+      for (yy = 0; yy < h; ++yy, ++curY) {
+        if (curY <= _max_text_y) {
           curX = x + xo;
-          for (xx = 0; xx < w; ++xx, ++curX, bits <<= 1)
-          {
-            if (!(bit++ & 7))
-            {
+          for (xx = 0; xx < w; ++xx, ++curX, bits <<= 1) {
+            if (!(bit++ & 7)) {
               bits = pgm_read_byte(&bitmap[bo++]);
             }
-            if (curX <= _max_text_x)
-            {
-              if (bits & 0x80)
-              {
+            if (curX <= _max_text_x) {
+              if (bits & 0x80) {
                 writePixelPreclipped(curX, curY, color);
               }
             }
           }
         }
       }
-    }
-    else // (textsize_x > 1 || textsize_y > 1)
+    } else // (textsize_x > 1 || textsize_y > 1)
     {
       curY = y + (yo16 * textsize_y);
-      for (yy = 0; yy < h; ++yy, curY += textsize_y)
-      {
-        if ((curY + textsize_y - 1) <= _max_text_y)
-        {
+      for (yy = 0; yy < h; ++yy, curY += textsize_y) {
+        if ((curY + textsize_y - 1) <= _max_text_y) {
           curX = x + (xo16 * textsize_x);
-          for (xx = 0; xx < w; ++xx, curX += textsize_x, bits <<= 1)
-          {
-            if (!(bit++ & 7))
-            {
+          for (xx = 0; xx < w; ++xx, curX += textsize_x, bits <<= 1) {
+            if (!(bit++ & 7)) {
               bits = pgm_read_byte(&bitmap[bo++]);
             }
-            if ((curX + textsize_x - 1) <= _max_text_x)
-            {
-              if (bits & 0x80)
-              {
-                writeFillRect(curX, curY, textsize_x - text_pixel_margin, textsize_y - text_pixel_margin, color);
+            if ((curX + textsize_x - 1) <= _max_text_x) {
+              if (bits & 0x80) {
+                writeFillRect(curX, curY, textsize_x - text_pixel_margin,
+                              textsize_y - text_pixel_margin, color);
               }
             }
           }
@@ -2138,37 +1910,32 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
       }
     }
     endWrite();
-  }
-  else // 'Classic' built-in font
-#endif // !defined(ATTINY_CORE)
+  } else // 'Classic' built-in font
+#endif   // !defined(ATTINY_CORE)
 #if defined(U8G2_FONT_SUPPORT)
-      if (u8g2Font)
-  {
+      if (u8g2Font) {
     _u8g2_target_y = y - ((_u8g2_char_height + _u8g2_char_y) * textsize_y);
-    if (_u8g2_target_y > _max_text_y)
-    {
+    if (_u8g2_target_y > _max_text_y) {
       return;
     }
 
-    if ((_u8g2_decode_ptr) && (_u8g2_char_width > 0))
-    {
+    if ((_u8g2_decode_ptr) && (_u8g2_char_width > 0)) {
       uint8_t a, b;
 
       _u8g2_target_x = x + (_u8g2_char_x * textsize_x);
-      // log_d("_u8g2_target_x: %d, _u8g2_target_y: %d", _u8g2_target_x, _u8g2_target_y);
+      // log_d("_u8g2_target_x: %d, _u8g2_target_y: %d", _u8g2_target_x,
+      // _u8g2_target_y);
 
       /* reset local x/y position */
       _u8g2_dx = 0;
       _u8g2_dy = 0;
       /* decode glyph */
       startWrite();
-      for (;;)
-      {
+      for (;;) {
         a = u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_0);
         b = u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_1);
         // log_d("a: %d, b: %d", a, b);
-        do
-        {
+        do {
           u8g2_font_decode_len(a, 0, color, bg);
           u8g2_font_decode_len(b, 1, color, bg);
         } while (u8g2_font_decode_get_unsigned_bits(1) != 0);
@@ -2178,42 +1945,32 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
       }
       endWrite();
     }
-  }
-  else // glcdfont
-#endif // defined(U8G2_FONT_SUPPORT)
+  } else // glcdfont
+#endif   // defined(U8G2_FONT_SUPPORT)
   {
     block_w = 6 * textsize_x;
     block_h = 8 * textsize_y;
-    if (
-        (x > _max_text_x) ||                 // Clip right
+    if ((x > _max_text_x) ||                 // Clip right
         (y > _max_text_y) ||                 // Clip bottom
         ((x + block_w - 1) < _min_text_x) || // Clip left
         ((y + block_h - 1) < _min_text_y)    // Clip top
-    )
-    {
+    ) {
       return;
     }
 
     startWrite();
-    if (textsize_x == 1 && textsize_y == 1)
-    {
+    if (textsize_x == 1 && textsize_y == 1) {
       curX = x;
       for (int8_t i = 0; i < 5; ++i, ++curX) // Char bitmap = 5 columns
       {
         uint8_t line = pgm_read_byte(&font[c * 5 + i]);
-        if (curX <= _max_text_x)
-        {
+        if (curX <= _max_text_x) {
           curY = y;
-          for (int8_t j = 0; j < 8; ++j, ++curY, line >>= 1)
-          {
-            if (curY <= _max_text_y)
-            {
-              if (line & 1)
-              {
+          for (int8_t j = 0; j < 8; ++j, ++curY, line >>= 1) {
+            if (curY <= _max_text_y) {
+              if (line & 1) {
                 writePixelPreclipped(curX, curY, color);
-              }
-              else if (bg != color)
-              {
+              } else if (bg != color) {
                 writePixelPreclipped(curX, curY, bg);
               }
             }
@@ -2223,41 +1980,37 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
       if (bg != color) // If opaque, draw vertical line for last column
       {
         curX = x + 5;
-        if (curX <= _max_text_x)
-        {
+        if (curX <= _max_text_x) {
           curH = ((y + 8 - 1) <= _max_text_y) ? 8 : (_max_text_y - y + 1);
           writeFastVLine(curX, y, curH, bg);
         }
       }
-    }
-    else // (textsize_x > 1 || textsize_y > 1)
+    } else // (textsize_x > 1 || textsize_y > 1)
     {
       curX = x;
-      for (int8_t i = 0; i < 5; ++i, curX += textsize_x) // Char bitmap = 5 columns
+      for (int8_t i = 0; i < 5;
+           ++i, curX += textsize_x) // Char bitmap = 5 columns
       {
-        if ((curX + textsize_x - 1) <= _max_text_x)
-        {
+        if ((curX + textsize_x - 1) <= _max_text_x) {
           uint8_t line = pgm_read_byte(&font[c * 5 + i]);
           curY = y;
-          for (int8_t j = 0; j < 8; j++, line >>= 1, curY += textsize_y)
-          {
-            if ((curY + textsize_y - 1) <= _max_text_y)
-            {
-              if (line & 1)
-              {
-                if (text_pixel_margin > 0)
-                {
-                  writeFillRect(curX, y + j * textsize_y, textsize_x - text_pixel_margin, textsize_y - text_pixel_margin, color);
-                  writeFillRect(curX + textsize_x - text_pixel_margin, y + j * textsize_y, text_pixel_margin, textsize_y, bg);
-                  writeFillRect(curX, y + ((j + 1) * textsize_y) - text_pixel_margin, textsize_x - text_pixel_margin, text_pixel_margin, bg);
-                }
-                else
-                {
+          for (int8_t j = 0; j < 8; j++, line >>= 1, curY += textsize_y) {
+            if ((curY + textsize_y - 1) <= _max_text_y) {
+              if (line & 1) {
+                if (text_pixel_margin > 0) {
+                  writeFillRect(curX, y + j * textsize_y,
+                                textsize_x - text_pixel_margin,
+                                textsize_y - text_pixel_margin, color);
+                  writeFillRect(curX + textsize_x - text_pixel_margin,
+                                y + j * textsize_y, text_pixel_margin,
+                                textsize_y, bg);
+                  writeFillRect(
+                      curX, y + ((j + 1) * textsize_y) - text_pixel_margin,
+                      textsize_x - text_pixel_margin, text_pixel_margin, bg);
+                } else {
                   writeFillRect(curX, curY, textsize_x, textsize_y, color);
                 }
-              }
-              else if (bg != color)
-              {
+              } else if (bg != color) {
                 writeFillRect(curX, curY, textsize_x, textsize_y, bg);
               }
             }
@@ -2267,11 +2020,9 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
       if (bg != color) // If opaque, draw vertical line for last column
       {
         curX = x + 5 * textsize_x;
-        if ((curX + textsize_x - 1) <= _max_text_x)
-        {
+        if ((curX + textsize_x - 1) <= _max_text_x) {
           curH = 8 * textsize_y;
-          while ((y + curH - 1) > _max_text_y)
-          {
+          while ((y + curH - 1) > _max_text_y) {
             curH -= textsize_y;
           }
           writeFillRect(curX, y, textsize_x, curH, bg);
@@ -2288,8 +2039,7 @@ void Arduino_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
   @param  c   The 8-bit ascii character to write
 */
 /**************************************************************************/
-size_t Arduino_GFX::write(uint8_t c)
-{
+size_t Arduino_GFX::write(uint8_t c) {
 #if !defined(ATTINY_CORE)
   if (gfxFont) // custom font
   {
@@ -2297,8 +2047,7 @@ size_t Arduino_GFX::write(uint8_t c)
     {
       cursor_x = _min_text_x; // Reset x to zero, advance y by one line
       cursor_y += (int16_t)textsize_y * pgm_read_byte(&gfxFont->yAdvance);
-    }
-    else if (c != '\r') // Not a carriage return; is normal char
+    } else if (c != '\r') // Not a carriage return; is normal char
     {
       uint16_t first = pgm_read_word(&gfxFont->first),
                last = pgm_read_word(&gfxFont->last);
@@ -2308,8 +2057,7 @@ size_t Arduino_GFX::write(uint8_t c)
         uint8_t gw = pgm_read_byte(&glyph->width),
                 xa = pgm_read_byte(&glyph->xAdvance);
         int8_t xo = pgm_read_sbyte(&glyph->xOffset);
-        if (wrap && ((cursor_x + ((xo + gw) * textsize_x) - 1) > _max_text_x))
-        {
+        if (wrap && ((cursor_x + ((xo + gw) * textsize_x) - 1) > _max_text_x)) {
           cursor_x = _min_text_x; // Reset x to zero, advance y by one line
           cursor_y += (int16_t)textsize_y * pgm_read_byte(&gfxFont->yAdvance);
         }
@@ -2317,47 +2065,33 @@ size_t Arduino_GFX::write(uint8_t c)
         cursor_x += (int16_t)textsize_x * xa;
       }
     }
-  }
-  else // not gfxFont
-#endif // !defined(ATTINY_CORE)
+  } else // not gfxFont
+#endif   // !defined(ATTINY_CORE)
 #if defined(U8G2_FONT_SUPPORT)
-      if (u8g2Font)
-  {
+      if (u8g2Font) {
     _u8g2_decode_ptr = 0;
 
-    if (_enableUTF8Print)
-    {
-      if (_utf8_state == 0)
-      {
+    if (_enableUTF8Print) {
+      if (_utf8_state == 0) {
         if (c >= 0xfc) /* 6 byte sequence */
         {
           _utf8_state = 5;
           c &= 1;
-        }
-        else if (c >= 0xf8)
-        {
+        } else if (c >= 0xf8) {
           _utf8_state = 4;
           c &= 3;
-        }
-        else if (c >= 0xf0)
-        {
+        } else if (c >= 0xf0) {
           _utf8_state = 3;
           c &= 7;
-        }
-        else if (c >= 0xe0)
-        {
+        } else if (c >= 0xe0) {
           _utf8_state = 2;
           c &= 15;
-        }
-        else if (c >= 0xc0)
-        {
+        } else if (c >= 0xc0) {
           _utf8_state = 1;
           c &= 0x01f;
         }
         _encoding = c;
-      }
-      else
-      {
+      } else {
         _utf8_state--;
         /* The case b < 0x080 (an illegal UTF8 encoding) is not checked here. */
         _encoding <<= 6;
@@ -2365,71 +2099,57 @@ size_t Arduino_GFX::write(uint8_t c)
         _encoding |= c;
       }
     } // _enableUTF8Print
-    else
-    {
+    else {
       _encoding = c;
     }
 
-    if (_utf8_state == 0)
-    {
-      if (_encoding == '\n')
-      {
+    if (_utf8_state == 0) {
+      if (_encoding == '\n') {
         cursor_x = _min_text_x;
         cursor_y += (int16_t)textsize_y * _u8g2_max_char_height;
-      }
-      else if (_encoding != '\r')
-      { // Ignore carriage returns
+      } else if (_encoding != '\r') { // Ignore carriage returns
         uint8_t *font = u8g2Font;
         const uint8_t *glyph_data = 0;
 
         // extract from u8g2_font_get_glyph_data()
         font += 23; // U8G2_FONT_DATA_STRUCT_SIZE
-        if (_encoding <= 255)
-        {
-          if (_encoding >= 'a')
-          {
+        if (_encoding <= 255) {
+          if (_encoding >= 'a') {
             font += _u8g2_start_pos_lower_a;
-          }
-          else if (_encoding >= 'A')
-          {
+          } else if (_encoding >= 'A') {
             font += _u8g2_start_pos_upper_A;
           }
 
-          for (;;)
-          {
+          for (;;) {
             if (pgm_read_byte(font + 1) == 0)
               break;
-            if (pgm_read_byte(font) == _encoding)
-            {
+            if (pgm_read_byte(font) == _encoding) {
               glyph_data = font + 2; /* skip encoding and glyph size */
             }
             font += pgm_read_byte(font + 1);
           }
         }
 #ifdef U8G2_WITH_UNICODE
-        else
-        {
+        else {
           uint16_t e;
           font += _u8g2_start_pos_unicode;
           const uint8_t *unicode_lookup_table = font;
 
-          /* issue 596: search for the glyph start in the unicode lookup table */
-          do
-          {
+          /* issue 596: search for the glyph start in the unicode lookup table
+           */
+          do {
             font += u8g2_font_get_word(unicode_lookup_table, 0);
             e = u8g2_font_get_word(unicode_lookup_table, 2);
             unicode_lookup_table += 4;
           } while (e < _encoding);
 
-          for (;;)
-          {
+          for (;;) {
             e = u8g2_font_get_word(font, 0);
 
             if (e == 0)
               break;
 
-            if (e == _encoding)
-            {
+            if (e == _encoding) {
               glyph_data = font + 3; /* skip encoding and glyph size */
               break;
             }
@@ -2438,24 +2158,30 @@ size_t Arduino_GFX::write(uint8_t c)
         }
 #endif
 
-        if (glyph_data)
-        {
+        if (glyph_data) {
           // u8g2_font_decode_glyph
           _u8g2_decode_ptr = glyph_data;
           _u8g2_decode_bit_pos = 0;
 
-          _u8g2_char_width = u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_width);
-          _u8g2_char_height = u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_height);
-          _u8g2_char_x = u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_x);
-          _u8g2_char_y = u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_y);
-          _u8g2_delta_x = u8g2_font_decode_get_signed_bits(_u8g2_bits_per_delta_x);
-          // log_d("c: %c, _encoding: %d, _u8g2_char_width: %d, _u8g2_char_height: %d, _u8g2_char_x: %d, _u8g2_char_y: %d, _u8g2_delta_x: %d",
-          //       c, _encoding, _u8g2_char_width, _u8g2_char_height, _u8g2_char_x, _u8g2_char_y, _u8g2_delta_x);
+          _u8g2_char_width =
+              u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_width);
+          _u8g2_char_height =
+              u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_height);
+          _u8g2_char_x =
+              u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_x);
+          _u8g2_char_y =
+              u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_y);
+          _u8g2_delta_x =
+              u8g2_font_decode_get_signed_bits(_u8g2_bits_per_delta_x);
+          // log_d("c: %c, _encoding: %d, _u8g2_char_width: %d,
+          // _u8g2_char_height: %d, _u8g2_char_x: %d, _u8g2_char_y: %d,
+          // _u8g2_delta_x: %d",
+          //       c, _encoding, _u8g2_char_width, _u8g2_char_height,
+          //       _u8g2_char_x, _u8g2_char_y, _u8g2_delta_x);
 
-          if (_u8g2_char_width > 0)
-          {
-            if (wrap && ((cursor_x + (textsize_x * _u8g2_char_width) - 1) > _max_text_x))
-            {
+          if (_u8g2_char_width > 0) {
+            if (wrap && ((cursor_x + (textsize_x * _u8g2_char_width) - 1) >
+                         _max_text_x)) {
               cursor_x = _min_text_x;
               cursor_y += (int16_t)textsize_y * _u8g2_max_char_height;
             }
@@ -2466,18 +2192,16 @@ size_t Arduino_GFX::write(uint8_t c)
         }
       }
     }
-  }
-  else // glcdfont
-#endif // defined(U8G2_FONT_SUPPORT)
+  } else // glcdfont
+#endif   // defined(U8G2_FONT_SUPPORT)
   {
-    if (c == '\n')
-    {                             // Newline?
+    if (c == '\n') {              // Newline?
       cursor_x = _min_text_x;     // Reset x to zero,
       cursor_y += textsize_y * 8; // advance y one line
-    }
-    else if (c != '\r') // Normal char; ignore carriage returns
+    } else if (c != '\r')         // Normal char; ignore carriage returns
     {
-      if (wrap && ((cursor_x + (textsize_x * 6) - 1) > _max_text_x)) // Off right?
+      if (wrap &&
+          ((cursor_x + (textsize_x * 6) - 1) > _max_text_x)) // Off right?
       {
         cursor_x = _min_text_x;     // Reset x to zero,
         cursor_y += textsize_y * 8; // advance y one line
@@ -2491,38 +2215,39 @@ size_t Arduino_GFX::write(uint8_t c)
 
 /**************************************************************************/
 /*!
-  @brief  Set text 'magnification' size. Each increase in s makes 1 pixel that much bigger.
+  @brief  Set text 'magnification' size. Each increase in s makes 1 pixel that
+  much bigger.
   @param  s   Desired text size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc
 */
 /**************************************************************************/
-void Arduino_GFX::setTextSize(uint8_t s)
-{
-  setTextSize(s, s, 0);
-}
+void Arduino_GFX::setTextSize(uint8_t s) { setTextSize(s, s, 0); }
 
 /**************************************************************************/
 /*!
-  @brief  Set text 'magnification' size. Each increase in s makes 1 pixel that much bigger.
+  @brief  Set text 'magnification' size. Each increase in s makes 1 pixel that
+  much bigger.
   @param  s_x Desired text width magnification level in X-axis. 1 is default
   @param  s_y Desired text width magnification level in Y-axis. 1 is default
 */
 /**************************************************************************/
-void Arduino_GFX::setTextSize(uint8_t s_x, uint8_t s_y)
-{
+void Arduino_GFX::setTextSize(uint8_t s_x, uint8_t s_y) {
   setTextSize(s_x, s_y, 0);
 }
 
 /**************************************************************************/
 /*!
-  @brief  Set text 'magnification' size. Each increase in s makes 1 pixel that much bigger.
-  @param  s_x             Desired text width magnification level in X-axis. 1 is default
-  @param  s_y             Desired text width magnification level in Y-axis. 1 is default
+  @brief  Set text 'magnification' size. Each increase in s makes 1 pixel that
+  much bigger.
+  @param  s_x             Desired text width magnification level in X-axis. 1 is
+  default
+  @param  s_y             Desired text width magnification level in Y-axis. 1 is
+  default
   @param  pixel_margin    Margin for each text pixel. 0 is default
 */
 /**************************************************************************/
-void Arduino_GFX::setTextSize(uint8_t s_x, uint8_t s_y, uint8_t pixel_margin)
-{
-  text_pixel_margin = ((pixel_margin < s_x) && (pixel_margin < s_y)) ? pixel_margin : 0;
+void Arduino_GFX::setTextSize(uint8_t s_x, uint8_t s_y, uint8_t pixel_margin) {
+  text_pixel_margin =
+      ((pixel_margin < s_x) && (pixel_margin < s_y)) ? pixel_margin : 0;
   textsize_x = (s_x > 0) ? s_x : 1;
   textsize_y = (s_y > 0) ? s_y : 1;
 }
@@ -2533,11 +2258,9 @@ void Arduino_GFX::setTextSize(uint8_t s_x, uint8_t s_y, uint8_t pixel_margin)
   @param  r   0 thru 3 corresponding to 4 cardinal rotations
 */
 /**************************************************************************/
-void Arduino_GFX::setRotation(uint8_t r)
-{
+void Arduino_GFX::setRotation(uint8_t r) {
   _rotation = (r & 7);
-  switch (_rotation)
-  {
+  switch (_rotation) {
   case 7:
   case 5:
   case 3:
@@ -2568,8 +2291,7 @@ void Arduino_GFX::setRotation(uint8_t r)
   @param  f   The GFXfont object, if NULL use built in 6x8 font
 */
 /**************************************************************************/
-void Arduino_GFX::setFont(const GFXfont *f)
-{
+void Arduino_GFX::setFont(const GFXfont *f) {
   gfxFont = (GFXfont *)f;
 #if defined(U8G2_FONT_SUPPORT)
   u8g2Font = NULL;
@@ -2581,14 +2303,11 @@ void Arduino_GFX::setFont(const GFXfont *f)
   @brief  flush framebuffer to output (for Canvas or NeoPixel sub-class)
 */
 /**************************************************************************/
-void Arduino_GFX::flush()
-{
-}
+void Arduino_GFX::flush() {}
 #endif // !defined(ATTINY_CORE)
 
 #if defined(U8G2_FONT_SUPPORT)
-void Arduino_GFX::setFont(const uint8_t *font)
-{
+void Arduino_GFX::setFont(const uint8_t *font) {
   gfxFont = NULL;
   u8g2Font = (uint8_t *)font;
 
@@ -2598,7 +2317,8 @@ void Arduino_GFX::setFont(const uint8_t *font)
   // uint8_t bbx_mode = pgm_read_byte(font + 1);
   _u8g2_bits_per_0 = pgm_read_byte(font + 2);
   _u8g2_bits_per_1 = pgm_read_byte(font + 3);
-  // log_d("_u8g2_glyph_cnt: %d, bbx_mode: %d, _u8g2_bits_per_0: %d, _u8g2_bits_per_1: %d",
+  // log_d("_u8g2_glyph_cnt: %d, bbx_mode: %d, _u8g2_bits_per_0: %d,
+  // _u8g2_bits_per_1: %d",
   //       _u8g2_glyph_cnt, bbx_mode, _u8g2_bits_per_0, _u8g2_bits_per_1);
 
   /* offset 4 */
@@ -2607,15 +2327,20 @@ void Arduino_GFX::setFont(const uint8_t *font)
   _u8g2_bits_per_char_x = pgm_read_byte(font + 6);
   _u8g2_bits_per_char_y = pgm_read_byte(font + 7);
   _u8g2_bits_per_delta_x = pgm_read_byte(font + 8);
-  // log_d("_u8g2_bits_per_char_width: %d, _u8g2_bits_per_char_height: %d, _u8g2_bits_per_char_x: %d, _u8g2_bits_per_char_y: %d, _u8g2_bits_per_delta_x: %d",
-  //       _u8g2_bits_per_char_width, _u8g2_bits_per_char_height, _u8g2_bits_per_char_x, _u8g2_bits_per_char_y, _u8g2_bits_per_delta_x);
+  // log_d("_u8g2_bits_per_char_width: %d, _u8g2_bits_per_char_height: %d,
+  // _u8g2_bits_per_char_x: %d, _u8g2_bits_per_char_y: %d,
+  // _u8g2_bits_per_delta_x: %d",
+  //       _u8g2_bits_per_char_width, _u8g2_bits_per_char_height,
+  //       _u8g2_bits_per_char_x, _u8g2_bits_per_char_y,
+  //       _u8g2_bits_per_delta_x);
 
   /* offset 9 */
   _u8g2_max_char_width = pgm_read_byte(font + 9);
   _u8g2_max_char_height = pgm_read_byte(font + 10);
   // int8_t x_offset = pgm_read_byte(font + 11);
   // int8_t y_offset = pgm_read_byte(font + 12);
-  // log_d("_u8g2_max_char_width: %d, _u8g2_max_char_height: %d, x_offset: %d, y_offset: %d",
+  // log_d("_u8g2_max_char_width: %d, _u8g2_max_char_height: %d, x_offset: %d,
+  // y_offset: %d",
   //       _u8g2_max_char_width, _u8g2_max_char_height, x_offset, y_offset);
 
   /* offset 13 */
@@ -2633,20 +2358,20 @@ void Arduino_GFX::setFont(const uint8_t *font)
   _u8g2_start_pos_unicode = u8g2_font_get_word(font, 21);
 #endif
   _u8g2_first_char = pgm_read_byte(font + 23);
-  // log_d("_u8g2_start_pos_upper_A: %d, _u8g2_start_pos_lower_a: %d, _u8g2_start_pos_unicode: %d, _u8g2_first_char: %d",
-  //       _u8g2_start_pos_upper_A, _u8g2_start_pos_lower_a, _u8g2_start_pos_unicode, _u8g2_first_char);
+  // log_d("_u8g2_start_pos_upper_A: %d, _u8g2_start_pos_lower_a: %d,
+  // _u8g2_start_pos_unicode: %d, _u8g2_first_char: %d",
+  //       _u8g2_start_pos_upper_A, _u8g2_start_pos_lower_a,
+  //       _u8g2_start_pos_unicode, _u8g2_first_char);
 }
 
-void Arduino_GFX::setUTF8Print(bool isEnable)
-{
-  _enableUTF8Print = isEnable;
-}
+void Arduino_GFX::setUTF8Print(bool isEnable) { _enableUTF8Print = isEnable; }
 #endif // defined(U8G2_FONT_SUPPORT)
 
 /**************************************************************************/
 /*!
   @brief  Helper to determine size of a character with current font/size.
-    Broke this out as it's used by both the PROGMEM- and RAM-resident getTextBounds() functions.
+    Broke this out as it's used by both the PROGMEM- and RAM-resident
+  getTextBounds() functions.
   @param  c       The ascii character in question
   @param  x       Pointer to x location of character
   @param  y       Pointer to y location of character
@@ -2656,9 +2381,8 @@ void Arduino_GFX::setUTF8Print(bool isEnable)
   @param  maxy    Maximum clipping value for Y
 */
 /**************************************************************************/
-void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
-                             int16_t *minx, int16_t *miny, int16_t *maxx, int16_t *maxy)
-{
+void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y, int16_t *minx,
+                             int16_t *miny, int16_t *maxx, int16_t *maxy) {
 #if !defined(ATTINY_CORE)
   if (gfxFont) // custom font
   {
@@ -2666,8 +2390,7 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
     {
       *x = _min_text_x; // Reset x to zero, advance y by one line
       *y += (int16_t)textsize_y * (uint8_t)pgm_read_byte(&gfxFont->yAdvance);
-    }
-    else if (c != '\r') // Not a carriage return; is normal char
+    } else if (c != '\r') // Not a carriage return; is normal char
     {
       uint8_t first = pgm_read_byte(&gfxFont->first),
               last = pgm_read_byte(&gfxFont->last);
@@ -2679,75 +2402,57 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
                 xa = pgm_read_byte(&glyph->xAdvance);
         int8_t xo = pgm_read_sbyte(&glyph->xOffset),
                yo = pgm_read_sbyte(&glyph->yOffset);
-        if (wrap && ((*x + ((xo + gw) * textsize_x) - 1) > _max_text_x))
-        {
+        if (wrap && ((*x + ((xo + gw) * textsize_x) - 1) > _max_text_x)) {
           *x = _min_text_x; // Reset x to zero, advance y by one line
-          *y += (int16_t)textsize_y * (uint8_t)pgm_read_byte(&gfxFont->yAdvance);
+          *y +=
+              (int16_t)textsize_y * (uint8_t)pgm_read_byte(&gfxFont->yAdvance);
         }
         int16_t x1 = *x + ((int16_t)xo * textsize_x),
                 y1 = *y + ((int16_t)yo * textsize_y),
                 x2 = x1 + ((int16_t)gw * textsize_x) - 1,
                 y2 = y1 + ((int16_t)gh * textsize_y) - 1;
-        if (x1 < *minx)
-        {
+        if (x1 < *minx) {
           *minx = x1;
         }
-        if (y1 < *miny)
-        {
+        if (y1 < *miny) {
           *miny = y1;
         }
-        if (x2 > *maxx)
-        {
+        if (x2 > *maxx) {
           *maxx = x2;
         }
-        if (y2 > *maxy)
-        {
+        if (y2 > *maxy) {
           *maxy = y2;
         }
         *x += (int16_t)textsize_x * xa;
       }
     }
-  }
-  else // not gfxFont
-#endif // !defined(ATTINY_CORE)
+  } else // not gfxFont
+#endif   // !defined(ATTINY_CORE)
 #if defined(U8G2_FONT_SUPPORT)
-      if (u8g2Font)
-  {
+      if (u8g2Font) {
     _u8g2_decode_ptr = 0;
 
-    if (_enableUTF8Print)
-    {
-      if (_utf8_state == 0)
-      {
+    if (_enableUTF8Print) {
+      if (_utf8_state == 0) {
         if (c >= 0xfc) /* 6 byte sequence */
         {
           _utf8_state = 5;
           c &= 1;
-        }
-        else if (c >= 0xf8)
-        {
+        } else if (c >= 0xf8) {
           _utf8_state = 4;
           c &= 3;
-        }
-        else if (c >= 0xf0)
-        {
+        } else if (c >= 0xf0) {
           _utf8_state = 3;
           c &= 7;
-        }
-        else if (c >= 0xe0)
-        {
+        } else if (c >= 0xe0) {
           _utf8_state = 2;
           c &= 15;
-        }
-        else if (c >= 0xc0)
-        {
+        } else if (c >= 0xc0) {
           _utf8_state = 1;
           c &= 0x01f;
         }
         _encoding = c;
-      }
-      else
-      {
+      } else {
         _utf8_state--;
         /* The case b < 0x080 (an illegal UTF8 encoding) is not checked here. */
         _encoding <<= 6;
@@ -2755,71 +2460,57 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
         _encoding |= c;
       }
     } // _enableUTF8Print
-    else
-    {
+    else {
       _encoding = c;
     }
 
-    if (_utf8_state == 0)
-    {
-      if (_encoding == '\n')
-      {
+    if (_utf8_state == 0) {
+      if (_encoding == '\n') {
         *x = _min_text_x;
         *y += (int16_t)textsize_y * _u8g2_max_char_height;
-      }
-      else if (_encoding != '\r')
-      { // Ignore carriage returns
+      } else if (_encoding != '\r') { // Ignore carriage returns
         uint8_t *font = u8g2Font;
         const uint8_t *glyph_data = 0;
 
         // extract from u8g2_font_get_glyph_data()
         font += 23; // U8G2_FONT_DATA_STRUCT_SIZE
-        if (_encoding <= 255)
-        {
-          if (_encoding >= 'a')
-          {
+        if (_encoding <= 255) {
+          if (_encoding >= 'a') {
             font += _u8g2_start_pos_lower_a;
-          }
-          else if (_encoding >= 'A')
-          {
+          } else if (_encoding >= 'A') {
             font += _u8g2_start_pos_upper_A;
           }
 
-          for (;;)
-          {
+          for (;;) {
             if (pgm_read_byte(font + 1) == 0)
               break;
-            if (pgm_read_byte(font) == _encoding)
-            {
+            if (pgm_read_byte(font) == _encoding) {
               glyph_data = font + 2; /* skip encoding and glyph size */
             }
             font += pgm_read_byte(font + 1);
           }
         }
 #ifdef U8G2_WITH_UNICODE
-        else
-        {
+        else {
           uint16_t e;
           font += _u8g2_start_pos_unicode;
           const uint8_t *unicode_lookup_table = font;
 
-          /* issue 596: search for the glyph start in the unicode lookup table */
-          do
-          {
+          /* issue 596: search for the glyph start in the unicode lookup table
+           */
+          do {
             font += u8g2_font_get_word(unicode_lookup_table, 0);
             e = u8g2_font_get_word(unicode_lookup_table, 2);
             unicode_lookup_table += 4;
           } while (e < _encoding);
 
-          for (;;)
-          {
+          for (;;) {
             e = u8g2_font_get_word(font, 0);
 
             if (e == 0)
               break;
 
-            if (e == _encoding)
-            {
+            if (e == _encoding) {
               glyph_data = font + 3; /* skip encoding and glyph size */
               break;
             }
@@ -2828,64 +2519,65 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
         }
 #endif
 
-        if (glyph_data)
-        {
+        if (glyph_data) {
           // u8g2_font_decode_glyph
           _u8g2_decode_ptr = glyph_data;
           _u8g2_decode_bit_pos = 0;
 
-          _u8g2_char_width = u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_width);
-          _u8g2_char_height = u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_height);
-          _u8g2_char_x = u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_x);
-          _u8g2_char_y = u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_y);
-          _u8g2_delta_x = u8g2_font_decode_get_signed_bits(_u8g2_bits_per_delta_x);
-          // log_d("c: %c, _encoding: %d, _u8g2_char_width: %d, _u8g2_char_height: %d, _u8g2_char_x: %d, _u8g2_char_y: %d, _u8g2_delta_x: %d",
-          //       c, _encoding, _u8g2_char_width, _u8g2_char_height, _u8g2_char_x, _u8g2_char_y, _u8g2_delta_x);
+          _u8g2_char_width =
+              u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_width);
+          _u8g2_char_height =
+              u8g2_font_decode_get_unsigned_bits(_u8g2_bits_per_char_height);
+          _u8g2_char_x =
+              u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_x);
+          _u8g2_char_y =
+              u8g2_font_decode_get_signed_bits(_u8g2_bits_per_char_y);
+          _u8g2_delta_x =
+              u8g2_font_decode_get_signed_bits(_u8g2_bits_per_delta_x);
+          // log_d("c: %c, _encoding: %d, _u8g2_char_width: %d,
+          // _u8g2_char_height: %d, _u8g2_char_x: %d, _u8g2_char_y: %d,
+          // _u8g2_delta_x: %d",
+          //       c, _encoding, _u8g2_char_width, _u8g2_char_height,
+          //       _u8g2_char_x, _u8g2_char_y, _u8g2_delta_x);
 
-          if (_u8g2_char_width > 0)
-          {
-            if (wrap && ((*x + (textsize_x * _u8g2_char_width) - 1) > _max_text_x))
-            {
+          if (_u8g2_char_width > 0) {
+            if (wrap &&
+                ((*x + (textsize_x * _u8g2_char_width) - 1) > _max_text_x)) {
               *x = _min_text_x;
               *y += (int16_t)textsize_y * _u8g2_max_char_height;
             }
           }
 
           int16_t x1 = *x + ((int16_t)_u8g2_char_x * textsize_x),
-                  y1 = *y - (((int16_t)_u8g2_char_height + _u8g2_char_y) * textsize_y),
+                  y1 = *y - (((int16_t)_u8g2_char_height + _u8g2_char_y) *
+                             textsize_y),
                   x2 = x1 + ((int16_t)_u8g2_char_width * textsize_x) - 1,
                   y2 = y1 + ((int16_t)_u8g2_char_height * textsize_y) - 1;
-          if (x1 < *minx)
-          {
+          if (x1 < *minx) {
             *minx = x1;
           }
-          if (y1 < *miny)
-          {
+          if (y1 < *miny) {
             *miny = y1;
           }
-          if (x2 > *maxx)
-          {
+          if (x2 > *maxx) {
             *maxx = x2;
           }
-          if (y2 > *maxy)
-          {
+          if (y2 > *maxy) {
             *maxy = y2;
           }
           *x += (int16_t)textsize_x * _u8g2_delta_x;
         }
       }
     }
-  }
-  else // glcdfont
-#endif // defined(U8G2_FONT_SUPPORT)
+  } else // glcdfont
+#endif   // defined(U8G2_FONT_SUPPORT)
   {
-    if (c == '\n')
-    {                       // Newline?
-      *x = _min_text_x;     // Reset x to zero,
-      *y += textsize_y * 8; // advance y one line
-                            // min/max x/y unchaged -- that waits for next 'normal' character
-    }
-    else if (c != '\r') // Normal char; ignore carriage returns
+    if (c == '\n') {    // Newline?
+      *x = _min_text_x; // Reset x to zero,
+      *y += textsize_y *
+            8; // advance y one line
+               // min/max x/y unchaged -- that waits for next 'normal' character
+    } else if (c != '\r') // Normal char; ignore carriage returns
     {
       if (wrap && ((*x + (textsize_x * 6) - 1) > _max_text_x)) // Off right?
       {
@@ -2894,20 +2586,16 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
       }
       int16_t x2 = *x + textsize_x * 6 - 1; // Lower-right pixel of char
       int16_t y2 = *y + textsize_y * 8 - 1;
-      if (x2 > *maxx)
-      {
+      if (x2 > *maxx) {
         *maxx = x2; // Track max x, y
       }
-      if (y2 > *maxy)
-      {
+      if (y2 > *maxy) {
         *maxy = y2;
       }
-      if (*x < *minx)
-      {
+      if (*x < *minx) {
         *minx = *x; // Track min x, y
       }
-      if (*y < *miny)
-      {
+      if (*y < *miny) {
         *miny = *y;
       }
       *x += textsize_x * 6; // Advance x one char
@@ -2917,7 +2605,8 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
 
 /**************************************************************************/
 /*!
-  @brief  Helper to determine size of a string with current font/size. Pass string and a cursor position, returns UL corner and W,H.
+  @brief  Helper to determine size of a string with current font/size. Pass
+  string and a cursor position, returns UL corner and W,H.
   @param  str The ascii string to measure
   @param  x   The current cursor X
   @param  y   The current cursor Y
@@ -2928,28 +2617,26 @@ void Arduino_GFX::charBounds(char c, int16_t *x, int16_t *y,
 */
 /**************************************************************************/
 void Arduino_GFX::getTextBounds(const char *str, int16_t x, int16_t y,
-                                int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h)
-{
+                                int16_t *x1, int16_t *y1, uint16_t *w,
+                                uint16_t *h) {
   uint8_t c; // Current character
 
   *x1 = x;
   *y1 = y;
   *w = *h = 0;
 
-  int16_t minx = _max_text_x, miny = _max_text_y, maxx = _min_text_x, maxy = _min_text_y;
+  int16_t minx = _max_text_x, miny = _max_text_y, maxx = _min_text_x,
+          maxy = _min_text_y;
 
-  while ((c = *str++))
-  {
+  while ((c = *str++)) {
     charBounds(c, &x, &y, &minx, &miny, &maxx, &maxy);
   }
 
-  if (maxx >= minx)
-  {
+  if (maxx >= minx) {
     *x1 = minx;
     *w = maxx - minx + 1;
   }
-  if (maxy >= miny)
-  {
+  if (maxy >= miny) {
     *y1 = miny;
     *h = maxy - miny + 1;
   }
@@ -2957,7 +2644,8 @@ void Arduino_GFX::getTextBounds(const char *str, int16_t x, int16_t y,
 
 /**************************************************************************/
 /*!
-  @brief  Helper to determine size of a string with current font/size. Pass string and a cursor position, returns UL corner and W,H.
+  @brief  Helper to determine size of a string with current font/size. Pass
+  string and a cursor position, returns UL corner and W,H.
   @param  str The ascii string to measure (as an arduino String() class)
   @param  x   The current cursor X
   @param  y   The current cursor Y
@@ -2968,17 +2656,17 @@ void Arduino_GFX::getTextBounds(const char *str, int16_t x, int16_t y,
 */
 /**************************************************************************/
 void Arduino_GFX::getTextBounds(const String &str, int16_t x, int16_t y,
-                                int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h)
-{
-  if (str.length() != 0)
-  {
+                                int16_t *x1, int16_t *y1, uint16_t *w,
+                                uint16_t *h) {
+  if (str.length() != 0) {
     getTextBounds(const_cast<char *>(str.c_str()), x, y, x1, y1, w, h);
   }
 }
 
 /**************************************************************************/
 /*!
-  @brief  Helper to determine size of a PROGMEM string with current font/size. Pass string and a cursor position, returns UL corner and W,H.
+  @brief  Helper to determine size of a PROGMEM string with current font/size.
+  Pass string and a cursor position, returns UL corner and W,H.
   @param  str The flash-memory ascii string to measure
   @param  x   The current cursor X
   @param  y   The current cursor Y
@@ -2988,27 +2676,26 @@ void Arduino_GFX::getTextBounds(const String &str, int16_t x, int16_t y,
   @param  h   The boundary height, set by function
 */
 /**************************************************************************/
-void Arduino_GFX::getTextBounds(const __FlashStringHelper *str,
-                                int16_t x, int16_t y, int16_t *x1, int16_t *y1, uint16_t *w, uint16_t *h)
-{
+void Arduino_GFX::getTextBounds(const __FlashStringHelper *str, int16_t x,
+                                int16_t y, int16_t *x1, int16_t *y1,
+                                uint16_t *w, uint16_t *h) {
   uint8_t *s = (uint8_t *)str, c;
 
   *x1 = x;
   *y1 = y;
   *w = *h = 0;
 
-  int16_t minx = _max_text_x, miny = _max_text_y, maxx = _min_text_x, maxy = _min_text_y;
+  int16_t minx = _max_text_x, miny = _max_text_y, maxx = _min_text_x,
+          maxy = _min_text_y;
 
   while ((c = pgm_read_byte(s++)))
     charBounds(c, &x, &y, &minx, &miny, &maxx, &maxy);
 
-  if (maxx >= minx)
-  {
+  if (maxx >= minx) {
     *x1 = minx;
     *w = maxx - minx + 1;
   }
-  if (maxy >= miny)
-  {
+  if (maxy >= miny) {
     *y1 = miny;
     *h = maxy - miny + 1;
   }
@@ -3020,8 +2707,7 @@ void Arduino_GFX::getTextBounds(const __FlashStringHelper *str,
   @param  i   True if you want to invert, false to make 'normal'
 */
 /**************************************************************************/
-void Arduino_GFX::invertDisplay(bool)
-{
+void Arduino_GFX::invertDisplay(bool) {
   // Do nothing, must be subclassed if supported by hardware
 }
 
@@ -3030,32 +2716,28 @@ void Arduino_GFX::invertDisplay(bool)
   @brief  Turn on display after turned off
 */
 /**************************************************************************/
-void Arduino_GFX::displayOn()
-{
-}
+void Arduino_GFX::displayOn() {}
 
 /**************************************************************************/
 /*!
   @brief  Turn off display
 */
 /**************************************************************************/
-void Arduino_GFX::displayOff()
-{
-}
+void Arduino_GFX::displayOff() {}
+
+void Arduino_GFX::setBrightness(uint8_t brightness) {}
+
+void Arduino_GFX::setContrast(uint8_t contrast) {}
 
 /**************************************************************************/
 /*!
   @brief  Enable Round Mode For Round Display
 */
 /**************************************************************************/
-bool Arduino_GFX::enableRoundMode()
-{
-  if (WIDTH != HEIGHT)
-  {
+bool Arduino_GFX::enableRoundMode() {
+  if (WIDTH != HEIGHT) {
     return false;
-  }
-  else
-  {
+  } else {
     // startWrite();
     _isRoundMode = true;
     _roundMinX = (int16_t *)malloc(HEIGHT * sizeof(int16_t));
@@ -3068,10 +2750,8 @@ bool Arduino_GFX::enableRoundMode()
     xt = 0;
     yt = r;
     s = (r2 << 1) + r2 * (1 - (r << 1));
-    do
-    {
-      while (s < 0)
-      {
+    do {
+      while (s < 0) {
         s += r2 * ((++xt << 2) + 2);
       }
       // writePixelPreclipped(r - xt, r - yt, RED);
@@ -3090,10 +2770,8 @@ bool Arduino_GFX::enableRoundMode()
     int16_t ddF_y = -2 * r;
     xt = 0;
     yt = r;
-    while (xt < yt)
-    {
-      if (s >= 0)
-      {
+    while (xt < yt) {
+      if (s >= 0) {
         yt--;
         ddF_y += 2;
         s += ddF_y;
